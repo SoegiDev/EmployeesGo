@@ -18,6 +18,14 @@ type EmpOption struct {
 	DB           *gorm.DB
 }
 
+type schemaRegion Region
+type schemaCountry Country
+type schemaLocation Location
+type schemaDepartment Department
+type schemaEmployee Employee
+type schemaJobHistory JobHistory
+type schemaJob Job
+
 var empSet *EmployeeSet
 
 func New(em EmpOption) *EmployeeSet {
@@ -34,13 +42,13 @@ var (
 )
 
 func migrateTables(db *gorm.DB) {
-	db.AutoMigrate(&Country{})
-	db.AutoMigrate(&Department{})
-	db.AutoMigrate(&Employee{})
-	db.AutoMigrate(&Job{})
-	db.AutoMigrate(&JobHistory{})
-	db.AutoMigrate(&Location{})
-	db.AutoMigrate(&Region{})
+	db.AutoMigrate(&schemaRegion{})
+	db.AutoMigrate(&schemaCountry{})
+	db.AutoMigrate(&schemaLocation{})
+	db.AutoMigrate(&schemaDepartment{})
+	db.AutoMigrate(&schemaEmployee{})
+	db.AutoMigrate(&schemaJobHistory{})
+	db.AutoMigrate(&schemaJob{})
 }
 
 func Resolve() *EmployeeSet {
@@ -48,17 +56,17 @@ func Resolve() *EmployeeSet {
 }
 
 // DEPARTMENT //
-func (a *EmployeeSet) CreateDepartment(departmentName string, managerId uint, locationId uint, companyId uint) error {
+func (a *EmployeeSet) CreateDepartment(data schemaDepartment) error {
 	var dbDepartment Department
-	res := a.DB.Where("department_name = ?", departmentName).First(&dbDepartment)
+	res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			a.DB.Create(
 				&Department{
-					DepartmentName: departmentName,
-					ManagerID:      managerId,
-					LocationID:     locationId,
-					CompanyID:      companyId})
+					DepartmentName: data.DepartmentName,
+					ManagerID:      data.ManagerID,
+					LocationID:     data.LocationID,
+					CompanyID:      data.CompanyID})
 			return nil
 		}
 	}
@@ -122,15 +130,15 @@ func (a *EmployeeSet) GetDepartment() ([]Department, error) {
 }
 
 // COUNTRY //
-func (a *EmployeeSet) CreateCountry(countryName string, regionId uint) error {
+func (a *EmployeeSet) CreateCountry(data schemaCountry) error {
 	var dbCountry Country
-	res := a.DB.Where("country_name = ?", countryName).First(&dbCountry)
+	res := a.DB.Where("country_name = ?", data.CountryName).First(&dbCountry)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			a.DB.Create(
 				&Country{
-					CountryName: countryName,
-					RegionID:    regionId})
+					CountryName: data.CountryName,
+					RegionID:    data.RegionID})
 		}
 	}
 	return res.Error
@@ -259,7 +267,7 @@ func (a *EmployeeSet) GetLocation() ([]Location, error) {
 }
 
 // REGION //
-func (a *EmployeeSet) CreateRegion(data Region) error {
+func (a *EmployeeSet) CreateRegion(data schemaRegion) error {
 	var dbRegion Region
 	res := a.DB.Where("region_name = ?", data.RegionName).First(&dbRegion)
 	if res.Error != nil {
@@ -326,7 +334,7 @@ func (a *EmployeeSet) GetRegion() ([]Region, error) {
 }
 
 // JOB //
-func (a *EmployeeSet) CreateJob(data Job) error {
+func (a *EmployeeSet) CreateJob(data schemaJob) error {
 	var dbJob Job
 	res := a.DB.Where("job_title = ?", data.JobTitle).First(&dbJob)
 	if res.Error != nil {
@@ -393,7 +401,7 @@ func (a *EmployeeSet) GetJob() ([]Job, error) {
 }
 
 // JOB HISTORY //
-func (a *EmployeeSet) CreateJobHistory(data JobHistory) error {
+func (a *EmployeeSet) CreateJobHistory(data schemaJobHistory) error {
 	var dbJob JobHistory
 	res := a.DB.Where("job_id = ?", data.JobID).First(&dbJob)
 	if res.Error != nil {
