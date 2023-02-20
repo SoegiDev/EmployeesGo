@@ -264,7 +264,7 @@ func (a *EmployeeSet) CreateRegion(data Region) error {
 	res := a.DB.Where("region_name = ?", data.RegionName).First(&dbRegion)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(data)
+			a.DB.Create(&data)
 		}
 	}
 	return res.Error
