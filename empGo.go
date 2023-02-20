@@ -18,14 +18,6 @@ type EmpOption struct {
 	DB           *gorm.DB
 }
 
-type schemaRegion Region
-type schemaCountry Country
-type schemaLocation Location
-type schemaDepartment Department
-type schemaEmployee Employee
-type schemaJobHistory JobHistory
-type schemaJob Job
-
 var empSet *EmployeeSet
 
 func New(em EmpOption) *EmployeeSet {
@@ -42,13 +34,13 @@ var (
 )
 
 func migrateTables(db *gorm.DB) {
-	db.AutoMigrate(&schemaRegion{})
-	db.AutoMigrate(&schemaCountry{})
-	db.AutoMigrate(&schemaLocation{})
-	db.AutoMigrate(&schemaDepartment{})
-	db.AutoMigrate(&schemaEmployee{})
-	db.AutoMigrate(&schemaJobHistory{})
-	db.AutoMigrate(&schemaJob{})
+	db.AutoMigrate(&Region{})
+	db.AutoMigrate(&Country{})
+	db.AutoMigrate(&Location{})
+	db.AutoMigrate(&Department{})
+	db.AutoMigrate(&Employee{})
+	db.AutoMigrate(&JobHistory{})
+	db.AutoMigrate(&Job{})
 }
 
 func Resolve() *EmployeeSet {
@@ -56,7 +48,7 @@ func Resolve() *EmployeeSet {
 }
 
 // DEPARTMENT //
-func (a *EmployeeSet) CreateDepartment(data schemaDepartment) error {
+func (a *EmployeeSet) CreateDepartment(data Department) error {
 	var dbDepartment Department
 	res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
 	if res.Error != nil {
@@ -130,7 +122,7 @@ func (a *EmployeeSet) GetDepartment() ([]Department, error) {
 }
 
 // COUNTRY //
-func (a *EmployeeSet) CreateCountry(data schemaCountry) error {
+func (a *EmployeeSet) CreateCountry(data Country) error {
 	var dbCountry Country
 	res := a.DB.Where("country_name = ?", data.CountryName).First(&dbCountry)
 	if res.Error != nil {
@@ -267,7 +259,7 @@ func (a *EmployeeSet) GetLocation() ([]Location, error) {
 }
 
 // REGION //
-func (a *EmployeeSet) CreateRegion(data schemaRegion) error {
+func (a *EmployeeSet) CreateRegion(data Region) error {
 	var dbRegion Region
 	res := a.DB.Where("region_name = ?", data.RegionName).First(&dbRegion)
 	if res.Error != nil {
@@ -334,7 +326,7 @@ func (a *EmployeeSet) GetRegion() ([]Region, error) {
 }
 
 // JOB //
-func (a *EmployeeSet) CreateJob(data schemaJob) error {
+func (a *EmployeeSet) CreateJob(data Job) error {
 	var dbJob Job
 	res := a.DB.Where("job_title = ?", data.JobTitle).First(&dbJob)
 	if res.Error != nil {
@@ -401,7 +393,7 @@ func (a *EmployeeSet) GetJob() ([]Job, error) {
 }
 
 // JOB HISTORY //
-func (a *EmployeeSet) CreateJobHistory(data schemaJobHistory) error {
+func (a *EmployeeSet) CreateJobHistory(data JobHistory) error {
 	var dbJob JobHistory
 	res := a.DB.Where("job_id = ?", data.JobID).First(&dbJob)
 	if res.Error != nil {
