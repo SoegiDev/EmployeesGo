@@ -53,12 +53,7 @@ func (a *EmployeeSet) CreateDepartment(data Department) error {
 	res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(
-				&Department{
-					DepartmentName: data.DepartmentName,
-					ManagerID:      data.ManagerID,
-					LocationID:     data.LocationID,
-					CompanyID:      data.CompanyID})
+			a.DB.Create(&data)
 			return nil
 		}
 	}
@@ -127,10 +122,8 @@ func (a *EmployeeSet) CreateCountry(data Country) error {
 	res := a.DB.Where("country_name = ?", data.CountryName).First(&dbCountry)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(
-				&Country{
-					CountryName: data.CountryName,
-					RegionID:    data.RegionID})
+			a.DB.Create(&data)
+			return nil
 		}
 	}
 	return res.Error
@@ -198,6 +191,7 @@ func (a *EmployeeSet) CreateLocation(data Location) error {
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			a.DB.Create(data)
+			return nil
 		}
 	}
 	return res.Error
@@ -265,6 +259,7 @@ func (a *EmployeeSet) CreateRegion(data Region) error {
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			a.DB.Create(&data)
+			return nil
 		}
 	}
 	return res.Error
@@ -332,6 +327,7 @@ func (a *EmployeeSet) CreateJob(data Job) error {
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			a.DB.Create(data)
+			return nil
 		}
 	}
 	return res.Error
@@ -399,6 +395,7 @@ func (a *EmployeeSet) CreateJobHistory(data JobHistory) error {
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			a.DB.Create(data)
+			return nil
 		}
 	}
 	return res.Error
