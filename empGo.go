@@ -14,14 +14,14 @@ type EmployeeSet struct {
 }
 
 type EmpOption struct {
-	TablePrefix string
-	DB          *gorm.DB
+	TablesPrefix string
+	DB           *gorm.DB
 }
 
 var empSet *EmployeeSet
 
 func New(em EmpOption) *EmployeeSet {
-	tablePrefix = em.TablePrefix
+	tablePrefix = em.TablesPrefix
 	empSet = &EmployeeSet{DB: em.DB}
 	migrateTables(em.DB)
 	return empSet
