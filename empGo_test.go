@@ -50,16 +50,16 @@ func TestCreateRegion(t *testing.T) {
 	}
 	err := empGo.CreateRegion(data)
 	if err != nil {
-		t.Error("an error was not expected while creating role ", err)
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
 	}
 
 	var c int64
 	res := db.Model(EmployeesGo.Region{}).Where("region_name = ?", data.RegionName).Count(&c)
 	if res.Error != nil {
-		t.Error("unexpected error while storing role: ", err)
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
 	}
 	if c == 0 {
-		t.Error("role has not been stored")
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
 	}
 
 	// test duplicated entries
@@ -75,42 +75,42 @@ func TestCreateRegion(t *testing.T) {
 	db.Where("region_name = ?", data.RegionName).Delete(EmployeesGo.Region{})
 }
 
-// func TestCreateCountry(t *testing.T) {
+func TestCreateCountry(t *testing.T) {
 
-// 	var table string = "country"
-// 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
-// 		TablesPrefix: prefix_test,
-// 		DB:           db,
-// 	})
+	var table string = "country"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
 
-// 	// test create role
-// 	data := EmployeesGo.Country{
-// 		CountryName: "Indonesia",
-// 		RegionID:    1,
-// 	}
-// 	err := empGo.CreateCountry(data)
-// 	if err != nil {
-// 		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-// 	}
+	// test create role
+	data := EmployeesGo.Country{
+		CountryName: "Indonesia",
+		RegionID:    1,
+	}
+	err := empGo.CreateCountry(data)
+	if err != nil {
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+	}
 
-// 	var c int64
-// 	res := db.Model(EmployeesGo.Country{}).Where("country_name = ?", data.CountryName).Count(&c)
-// 	if res.Error != nil {
-// 		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-// 	}
-// 	if c == 0 {
-// 		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-// 	}
+	var c int64
+	res := db.Model(EmployeesGo.Country{}).Where("country_name = ?", data.CountryName).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+	}
 
-// 	// test duplicated entries
-// 	empGo.CreateCountry(data)
-// 	empGo.CreateCountry(data)
-// 	empGo.CreateCountry(data)
-// 	db.Model(EmployeesGo.Country{}).Where("country_name = ?", data.CountryName).Count(&c)
-// 	if c > 1 {
-// 		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
-// 	}
+	// test duplicated entries
+	empGo.CreateCountry(data)
+	empGo.CreateCountry(data)
+	empGo.CreateCountry(data)
+	db.Model(EmployeesGo.Country{}).Where("country_name = ?", data.CountryName).Count(&c)
+	if c > 1 {
+		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	}
 
-// 	// clean up
-// 	db.Where("country_name = ?", data.CountryName).Delete(EmployeesGo.Country{})
-// }
+	// clean up
+	db.Where("country_name = ?", data.CountryName).Delete(EmployeesGo.Country{})
+}
