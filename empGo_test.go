@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	EmployeesGo "github.com/SoegiDev/EmployeesGo"
 	"github.com/joho/godotenv"
@@ -243,7 +244,7 @@ func TestCreateEmployee(t *testing.T) {
 	}
 
 	// clean up
-	db.Where("fist_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
+	db.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
 }
 
 func TestCreateJobHistory(t *testing.T) {
@@ -255,25 +256,18 @@ func TestCreateJobHistory(t *testing.T) {
 	})
 
 	// test create role
-	data := EmployeesGo.Employee{
-		CustomID:     "312312312",
-		EmployeeID:   "12312312323",
-		FirstName:    "Test",
-		LastName:     "Name",
-		Email:        "test@gmail.com",
-		PhoneNumber:  "12312312312",
+	data := EmployeesGo.JobHistory{
+		StartDate:    time.Now(),
+		EndDate:      time.Now(),
 		JobID:        1,
-		Salary:       90000000,
-		Picture:      "",
-		ManagerID:    1,
 		DepartmentID: 1}
-	err := empGo.CreateEmployee(data)
+	err := empGo.CreateJobHistory(data)
 	if err != nil {
 		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
 	}
 
 	var c int64
-	res := db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
+	res := db.Model(EmployeesGo.JobHistory{}).Where("job_id = ?", data.JobID).Count(&c)
 	if res.Error != nil {
 		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
 	}
@@ -282,14 +276,54 @@ func TestCreateJobHistory(t *testing.T) {
 	}
 
 	// test duplicated entries
-	empGo.CreateEmployee(data)
-	empGo.CreateEmployee(data)
-	empGo.CreateEmployee(data)
-	db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
+	empGo.CreateJobHistory(data)
+	empGo.CreateJobHistory(data)
+	empGo.CreateJobHistory(data)
+	db.Model(EmployeesGo.Employee{}).Where("job_id = ?", data.JobID).Count(&c)
 	if c > 1 {
 		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
 	}
 
 	// clean up
-	db.Where("fist_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
+	db.Where("job_id = ?", data.JobID).Delete(EmployeesGo.JobHistory{})
+}
+
+func TestCreateJob(t *testing.T) {
+
+	var table string = "job"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test create role
+	data := EmployeesGo.Job{
+		JobTitle:  "Software Engineer",
+		MinSalary: 10000000,
+		MaxSalary: 19000000}
+	err := empGo.CreateJob(data)
+	if err != nil {
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+	}
+
+	var c int64
+	res := db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+	}
+
+	// test duplicated entries
+	empGo.CreateJob(data)
+	empGo.CreateJob(data)
+	empGo.CreateJob(data)
+	db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
+	if c > 1 {
+		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	}
+
+	// clean up
+	db.Where("job_title = ?", data.JobTitle).Delete(EmployeesGo.Job{})
 }
