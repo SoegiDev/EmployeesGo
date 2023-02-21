@@ -190,7 +190,7 @@ func (a *EmployeeSet) CreateLocation(data Location) error {
 	res := a.DB.Where("street_address = ?", data.StreetAddress).First(&dbLocation)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(data)
+			a.DB.Create(&data)
 			return nil
 		}
 	}
@@ -326,7 +326,7 @@ func (a *EmployeeSet) CreateJob(data Job) error {
 	res := a.DB.Where("job_title = ?", data.JobTitle).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(data)
+			a.DB.Create(&data)
 			return nil
 		}
 	}
@@ -394,7 +394,7 @@ func (a *EmployeeSet) CreateJobHistory(data JobHistory) error {
 	res := a.DB.Where("job_id = ?", data.JobID).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(data)
+			a.DB.Create(&data)
 			return nil
 		}
 	}

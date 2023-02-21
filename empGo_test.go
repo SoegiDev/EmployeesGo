@@ -114,3 +114,45 @@ func TestCreateCountry(t *testing.T) {
 	// clean up
 	db.Where("country_name = ?", data.CountryName).Delete(EmployeesGo.Country{})
 }
+
+func TestCreateLocation(t *testing.T) {
+
+	var table string = "location"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test create role
+	data := EmployeesGo.Location{
+		StreetAddress: "Jl. Gading 2",
+		PostalCode:    "12312",
+		City:          "Jakarta Timur",
+		StateProvince: "DKI Jakarta",
+		CountryID:     1}
+	err := empGo.CreateLocation(data)
+	if err != nil {
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+	}
+
+	var c int64
+	res := db.Model(EmployeesGo.Location{}).Where("street_address = ?", data.StreetAddress).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+	}
+
+	// test duplicated entries
+	empGo.CreateLocation(data)
+	empGo.CreateLocation(data)
+	empGo.CreateLocation(data)
+	db.Model(EmployeesGo.Location{}).Where("street_address = ?", data.StreetAddress).Count(&c)
+	if c > 1 {
+		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	}
+
+	// clean up
+	db.Where("street_address = ?", data.StreetAddress).Delete(EmployeesGo.Location{})
+}
