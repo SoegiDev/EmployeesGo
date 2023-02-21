@@ -28,9 +28,13 @@ func New(em EmpOption) *EmployeeSet {
 }
 
 var (
-	ErrDepartmentNotFound = errors.New("cannot delete Department cause Not Found")
-	ErrCountryNotFound    = errors.New("cannot delete Country cause Not Found")
-	ErrLocationNotFound   = errors.New("cannot delete Location cause Not Found")
+	ErrDepartmentNotFound = errors.New("Department Not Found")
+	ErrCountryNotFound    = errors.New("Country Not Found")
+	ErrLocationNotFound   = errors.New("Location Not Found")
+	ErrEmployeeNotFound   = errors.New("Employee Not Found")
+	ErrJobNotFound        = errors.New("Job Not Found")
+	ErrJobHistoryNotFound = errors.New("Job History Not Found")
+	ErrRegionNotFound     = errors.New("Region Not Found")
 )
 
 func migrateTables(db *gorm.DB) {
@@ -155,7 +159,7 @@ func (a *EmployeeSet) DeleteCountry(countryId uint) error {
 func (a *EmployeeSet) GetCountryId(id string) (Country, error) {
 	var dbCountry Country
 	if NullString(id) != nil {
-		return dbCountry, ErrDepartmentNotFound
+		return dbCountry, ErrCountryNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	countryId := uint(conv)
@@ -163,11 +167,11 @@ func (a *EmployeeSet) GetCountryId(id string) (Country, error) {
 	res := a.DB.Where("id = ?", countryId).First(&dbCountry)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbCountry, ErrDepartmentNotFound
+			return dbCountry, ErrCountryNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Country Single Data
 	return dbCountry, nil
 }
 
@@ -176,11 +180,11 @@ func (a *EmployeeSet) GetCountry() ([]Country, error) {
 	res := a.DB.Find(&dbCountry)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbCountry, ErrDepartmentNotFound
+			return dbCountry, ErrCountryNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Country Single Data
 	return dbCountry, nil
 }
 
@@ -211,7 +215,7 @@ func (a *EmployeeSet) DeleteLocation(locationId uint) error {
 	res := a.DB.Where("id = ?", locationId).First(&dbLocation)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return ErrCountryNotFound
+			return ErrLocationNotFound
 		}
 
 	}
@@ -223,7 +227,7 @@ func (a *EmployeeSet) DeleteLocation(locationId uint) error {
 func (a *EmployeeSet) GetLocationId(id string) (Location, error) {
 	var dbLocation Location
 	if NullString(id) != nil {
-		return dbLocation, ErrDepartmentNotFound
+		return dbLocation, ErrLocationNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	locationId := uint(conv)
@@ -231,11 +235,11 @@ func (a *EmployeeSet) GetLocationId(id string) (Location, error) {
 	res := a.DB.Where("id = ?", locationId).First(&dbLocation)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbLocation, ErrDepartmentNotFound
+			return dbLocation, ErrLocationNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Location Single Data
 	return dbLocation, nil
 }
 
@@ -244,11 +248,11 @@ func (a *EmployeeSet) GetLocation() ([]Location, error) {
 	res := a.DB.Find(&dbLocation)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbLocation, ErrDepartmentNotFound
+			return dbLocation, ErrLocationNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Location Single Data
 	return dbLocation, nil
 }
 
@@ -279,7 +283,7 @@ func (a *EmployeeSet) DeleteRegion(regionId uint) error {
 	res := a.DB.Where("id = ?", regionId).First(&dbRegion)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return ErrCountryNotFound
+			return ErrRegionNotFound
 		}
 
 	}
@@ -291,7 +295,7 @@ func (a *EmployeeSet) DeleteRegion(regionId uint) error {
 func (a *EmployeeSet) GetRegionId(id string) (Region, error) {
 	var dbRegion Region
 	if NullString(id) != nil {
-		return dbRegion, ErrDepartmentNotFound
+		return dbRegion, ErrRegionNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	regionId := uint(conv)
@@ -299,11 +303,11 @@ func (a *EmployeeSet) GetRegionId(id string) (Region, error) {
 	res := a.DB.Where("id = ?", regionId).First(&dbRegion)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbRegion, ErrDepartmentNotFound
+			return dbRegion, ErrRegionNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Region Single Data
 	return dbRegion, nil
 }
 
@@ -312,11 +316,11 @@ func (a *EmployeeSet) GetRegion() ([]Region, error) {
 	res := a.DB.Find(&dbRegion)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbRegion, ErrDepartmentNotFound
+			return dbRegion, ErrRegionNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Region List
 	return dbRegion, nil
 }
 
@@ -347,7 +351,7 @@ func (a *EmployeeSet) DeleteJob(jobId uint) error {
 	res := a.DB.Where("id = ?", jobId).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return ErrCountryNotFound
+			return ErrJobNotFound
 		}
 
 	}
@@ -359,7 +363,7 @@ func (a *EmployeeSet) DeleteJob(jobId uint) error {
 func (a *EmployeeSet) GetJobId(id string) (Job, error) {
 	var dbJob Job
 	if NullString(id) != nil {
-		return dbJob, ErrDepartmentNotFound
+		return dbJob, ErrJobNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	jobId := uint(conv)
@@ -367,11 +371,11 @@ func (a *EmployeeSet) GetJobId(id string) (Job, error) {
 	res := a.DB.Where("id = ?", jobId).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrDepartmentNotFound
+			return dbJob, ErrJobNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Employee Single Data
 	return dbJob, nil
 }
 
@@ -380,11 +384,11 @@ func (a *EmployeeSet) GetJob() ([]Job, error) {
 	res := a.DB.Find(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrDepartmentNotFound
+			return dbJob, ErrJobNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Employee Single Data
 	return dbJob, nil
 }
 
@@ -415,7 +419,7 @@ func (a *EmployeeSet) DeleteJobHistory(jobId uint) error {
 	res := a.DB.Where("id = ?", jobId).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return ErrCountryNotFound
+			return ErrJobHistoryNotFound
 		}
 
 	}
@@ -427,7 +431,7 @@ func (a *EmployeeSet) DeleteJobHistory(jobId uint) error {
 func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistory, error) {
 	var dbJob JobHistory
 	if NullString(id) != nil {
-		return dbJob, ErrDepartmentNotFound
+		return dbJob, ErrJobHistoryNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	jobId := uint(conv)
@@ -435,11 +439,11 @@ func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistory, error) {
 	res := a.DB.Where("id = ?", jobId).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrDepartmentNotFound
+			return dbJob, ErrJobHistoryNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Job History Single Data
 	return dbJob, nil
 }
 
@@ -448,12 +452,80 @@ func (a *EmployeeSet) GetJobHistory() ([]JobHistory, error) {
 	res := a.DB.Find(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrDepartmentNotFound
+			return dbJob, ErrJobHistoryNotFound
 		}
 
 	}
-	// Get the Department Single Data
+	// Get the Job History Single Data
 	return dbJob, nil
+}
+
+// EMPLOYEE //
+func (a *EmployeeSet) CreateEmployee(data Employee) error {
+	var dbEmployee Employee
+	res := a.DB.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).First(&dbEmployee)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			a.DB.Create(&data)
+			return nil
+		}
+	}
+	return res.Error
+}
+
+func (a *EmployeeSet) UpdateEmployee(employeeId uint, data map[string]interface{}) error {
+	var dbEmployee Employee
+	res := a.DB.Model(&dbEmployee).Where("id = ?", employeeId).Updates(data)
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
+}
+
+func (a *EmployeeSet) DeleteEmployee(employeeId uint) error {
+	var dbJob JobHistory
+	res := a.DB.Where("id = ?", employeeId).First(&dbJob)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return ErrEmployeeNotFound
+		}
+
+	}
+	// Delete the Country
+	a.DB.Where("id = ?", employeeId).Delete(Employee{})
+	return nil
+}
+
+func (a *EmployeeSet) GetEmployeeId(id string) (Employee, error) {
+	var dbEmployee Employee
+	if NullString(id) != nil {
+		return dbEmployee, ErrEmployeeNotFound
+	}
+	conv, _ := strconv.Atoi(id)
+	employeeId := uint(conv)
+
+	res := a.DB.Where("id = ?", employeeId).First(&dbEmployee)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return dbEmployee, ErrEmployeeNotFound
+		}
+
+	}
+	// Get the Employee Single Data
+	return dbEmployee, nil
+}
+
+func (a *EmployeeSet) GetEmployee() ([]Employee, error) {
+	var dbEmployee []Employee
+	res := a.DB.Find(&dbEmployee)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return dbEmployee, ErrEmployeeNotFound
+		}
+
+	}
+	// Get the Employee List
+	return dbEmployee, nil
 }
 
 func NullString(v string) *string {

@@ -156,3 +156,92 @@ func TestCreateLocation(t *testing.T) {
 	// clean up
 	db.Where("street_address = ?", data.StreetAddress).Delete(EmployeesGo.Location{})
 }
+
+func TestCreateDepartment(t *testing.T) {
+
+	var table string = "department"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test create role
+	data := EmployeesGo.Department{
+		DepartmentName: "ICT",
+		ManagerID:      1,
+		LocationID:     1,
+		CompanyID:      1}
+	err := empGo.CreateDepartment(data)
+	if err != nil {
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+	}
+
+	var c int64
+	res := db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+	}
+
+	// test duplicated entries
+	empGo.CreateDepartment(data)
+	empGo.CreateDepartment(data)
+	empGo.CreateDepartment(data)
+	db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
+	if c > 1 {
+		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	}
+
+	// clean up
+	db.Where("department_name = ?", data.DepartmentName).Delete(EmployeesGo.Department{})
+}
+
+func TestCreateEmployee(t *testing.T) {
+
+	var table string = "employee"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test create role
+	data := EmployeesGo.Employee{
+		CustomID:     "312312312",
+		EmployeeID:   "12312312323",
+		FirstName:    "Test",
+		LastName:     "Name",
+		Email:        "test@gmail.com",
+		PhoneNumber:  "12312312312",
+		JobID:        1,
+		Salary:       90000000,
+		Picture:      "",
+		ManagerID:    1,
+		DepartmentID: 1}
+	err := empGo.CreateE(data)
+	if err != nil {
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+	}
+
+	var c int64
+	res := db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+	}
+
+	// test duplicated entries
+	empGo.CreateDepartment(data)
+	empGo.CreateDepartment(data)
+	empGo.CreateDepartment(data)
+	db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
+	if c > 1 {
+		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	}
+
+	// clean up
+	db.Where("department_name = ?", data.DepartmentName).Delete(EmployeesGo.Department{})
+}
