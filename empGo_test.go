@@ -257,6 +257,7 @@ func TestCreateJobHistory(t *testing.T) {
 
 	// test create role
 	data := EmployeesGo.JobHistory{
+		EmployeeID:   1,
 		StartDate:    time.Now(),
 		EndDate:      time.Now(),
 		JobID:        1,
