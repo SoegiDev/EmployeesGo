@@ -219,13 +219,13 @@ func TestCreateEmployee(t *testing.T) {
 		Picture:      "",
 		ManagerID:    1,
 		DepartmentID: 1}
-	err := empGo.CreateE(data)
+	err := empGo.CreateEmployee(data)
 	if err != nil {
 		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
 	}
 
 	var c int64
-	res := db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
+	res := db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
 	if res.Error != nil {
 		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
 	}
@@ -234,14 +234,62 @@ func TestCreateEmployee(t *testing.T) {
 	}
 
 	// test duplicated entries
-	empGo.CreateDepartment(data)
-	empGo.CreateDepartment(data)
-	empGo.CreateDepartment(data)
-	db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
+	empGo.CreateEmployee(data)
+	empGo.CreateEmployee(data)
+	empGo.CreateEmployee(data)
+	db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
 	if c > 1 {
 		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
 	}
 
 	// clean up
-	db.Where("department_name = ?", data.DepartmentName).Delete(EmployeesGo.Department{})
+	db.Where("fist_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
+}
+
+func TestCreateJobHistory(t *testing.T) {
+
+	var table string = "job_history"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test create role
+	data := EmployeesGo.Employee{
+		CustomID:     "312312312",
+		EmployeeID:   "12312312323",
+		FirstName:    "Test",
+		LastName:     "Name",
+		Email:        "test@gmail.com",
+		PhoneNumber:  "12312312312",
+		JobID:        1,
+		Salary:       90000000,
+		Picture:      "",
+		ManagerID:    1,
+		DepartmentID: 1}
+	err := empGo.CreateEmployee(data)
+	if err != nil {
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+	}
+
+	var c int64
+	res := db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+	}
+
+	// test duplicated entries
+	empGo.CreateEmployee(data)
+	empGo.CreateEmployee(data)
+	empGo.CreateEmployee(data)
+	db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
+	if c > 1 {
+		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	}
+
+	// clean up
+	db.Where("fist_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
 }
