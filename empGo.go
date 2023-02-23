@@ -499,7 +499,7 @@ func (a *EmployeeSet) DeleteEmployee(employeeId uint) error {
 
 func (a *EmployeeSet) GetEmployeeId(id string) (Employee, error) {
 	var dbEmployee Employee
-	if NullString(id) != nil {
+	if NullString(id) == nil {
 		return dbEmployee, ErrParameterRequest
 	}
 	conv, _ := strconv.Atoi(id)
