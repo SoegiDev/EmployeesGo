@@ -73,7 +73,7 @@ func TestCreateRegion(t *testing.T) {
 	}
 
 	// clean up
-	db.Where("region_name = ?", data.RegionName).Delete(EmployeesGo.Region{})
+	//db.Where("region_name = ?", data.RegionName).Delete(EmployeesGo.Region{})
 }
 
 func TestCreateCountry(t *testing.T) {
@@ -113,7 +113,7 @@ func TestCreateCountry(t *testing.T) {
 	}
 
 	// clean up
-	db.Where("country_name = ?", data.CountryName).Delete(EmployeesGo.Country{})
+	//db.Where("country_name = ?", data.CountryName).Delete(EmployeesGo.Country{})
 }
 
 func TestCreateLocation(t *testing.T) {
@@ -155,7 +155,7 @@ func TestCreateLocation(t *testing.T) {
 	}
 
 	// clean up
-	db.Where("street_address = ?", data.StreetAddress).Delete(EmployeesGo.Location{})
+	//db.Where("street_address = ?", data.StreetAddress).Delete(EmployeesGo.Location{})
 }
 
 func TestCreateDepartment(t *testing.T) {
@@ -196,7 +196,47 @@ func TestCreateDepartment(t *testing.T) {
 	}
 
 	// clean up
-	db.Where("department_name = ?", data.DepartmentName).Delete(EmployeesGo.Department{})
+	//db.Where("department_name = ?", data.DepartmentName).Delete(EmployeesGo.Department{})
+}
+
+func TestCreateJob(t *testing.T) {
+
+	var table string = "job"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test create role
+	data := EmployeesGo.Job{
+		JobTitle:  "Software Engineer",
+		MinSalary: 10000000,
+		MaxSalary: 19000000}
+	err := empGo.CreateJob(data)
+	if err != nil {
+		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+	}
+
+	var c int64
+	res := db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+	}
+
+	// test duplicated entries
+	empGo.CreateJob(data)
+	empGo.CreateJob(data)
+	empGo.CreateJob(data)
+	db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
+	if c > 1 {
+		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	}
+
+	// clean up
+	//db.Where("job_title = ?", data.JobTitle).Delete(EmployeesGo.Job{})
 }
 
 func TestCreateEmployee(t *testing.T) {
@@ -215,11 +255,11 @@ func TestCreateEmployee(t *testing.T) {
 		LastName:     "Name",
 		Email:        "test@gmail.com",
 		PhoneNumber:  "12312312312",
-		JobID:        1,
+		JobID:        0,
 		Salary:       90000000,
 		Picture:      "",
-		ManagerID:    1,
-		DepartmentID: 1}
+		ManagerID:    0,
+		DepartmentID: 0}
 	err := empGo.CreateEmployee(data)
 	if err != nil {
 		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
@@ -244,7 +284,7 @@ func TestCreateEmployee(t *testing.T) {
 	}
 
 	// clean up
-	db.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
+	//db.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
 }
 
 func TestCreateJobHistory(t *testing.T) {
@@ -286,45 +326,15 @@ func TestCreateJobHistory(t *testing.T) {
 	}
 
 	// clean up
-	db.Where("job_id = ?", data.JobID).Delete(EmployeesGo.JobHistory{})
+	//db.Where("job_id = ?", data.JobID).Delete(EmployeesGo.JobHistory{})
 }
 
-func TestCreateJob(t *testing.T) {
-
-	var table string = "job"
-	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
-		TablesPrefix: prefix_test,
-		DB:           db,
-	})
-
-	// test create role
-	data := EmployeesGo.Job{
-		JobTitle:  "Software Engineer",
-		MinSalary: 10000000,
-		MaxSalary: 19000000}
-	err := empGo.CreateJob(data)
-	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-	}
-
-	var c int64
-	res := db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-	}
-
-	// test duplicated entries
-	empGo.CreateJob(data)
-	empGo.CreateJob(data)
-	empGo.CreateJob(data)
-	db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
-	}
-
-	// clean up
-	db.Where("job_title = ?", data.JobTitle).Delete(EmployeesGo.Job{})
+func TestCleanUp(t *testing.T) {
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Region{})
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Country{})
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Location{})
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Department{})
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Job{})
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Employee{})
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.JobHistory{})
 }

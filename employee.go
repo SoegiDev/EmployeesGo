@@ -9,12 +9,10 @@ type Employee struct {
 	Email        string
 	PhoneNumber  string
 	JobID        uint
-	Job          Job
 	Salary       uint64
 	Picture      string
 	ManagerID    uint
 	DepartmentID uint
-	Department   Department
 }
 
 func (a Employee) TableName() string {
