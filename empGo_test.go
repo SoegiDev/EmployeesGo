@@ -348,9 +348,35 @@ func TestGetEmployee(t *testing.T) {
 	if c == 0 {
 		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
 	} else {
-		var empData EmployeesGo.EmployeeMeta
+		var empData EmployeesGo.EmployeeResponse
 		params := strconv.FormatUint(uint64(data), 10)
 		empData, err := empGo.GetEmployeeId(params)
+		if err != nil {
+			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+		}
+		fmt.Println(empData)
+	}
+}
+
+func TestGetCountry(t *testing.T) {
+	var table string = "get_employee"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var c int64
+
+	var data uint = 1
+	res := db.Model(EmployeesGo.Country{}).Where("id = ?", data).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
+	} else {
+		var empData EmployeesGo.CountryResponse
+		params := strconv.FormatUint(uint64(data), 10)
+		empData, err := empGo.GetCountryId(params)
 		if err != nil {
 			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
 		}
