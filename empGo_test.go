@@ -358,19 +358,19 @@ func TestGetEmployee(t *testing.T) {
 	}
 }
 
-// func TestCleanUp(t *testing.T) {
-// 	tbl_regions := `"employeeGo_regions"`
-// 	tbl_countries := `"employeeGo_countries"`
-// 	tbl_locations := `"employeeGo_locations"`
-// 	tbl_departments := `"employeeGo_departments"`
-// 	tbl_jobs := `"employeeGo_jobs"`
-// 	tbl_employees := `"employeeGo_employees"`
-// 	tbl_job_history := `"employeeGo_job_history"`
-// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_regions))
-// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_countries))
-// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_locations))
-// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_departments))
-// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_jobs))
-// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_employees))
-// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_job_history))
-// }
+func TestCleanUp(t *testing.T) {
+	tbl_regions := `"employeeGo_regions"`
+	tbl_countries := `"employeeGo_countries"`
+	tbl_locations := `"employeeGo_locations"`
+	tbl_departments := `"employeeGo_departments"`
+	tbl_jobs := `"employeeGo_jobs"`
+	tbl_employees := `"employeeGo_employees"`
+	tbl_job_history := `"employeeGo_job_history"`
+	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_regions))
+	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_countries))
+	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_locations))
+	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_departments))
+	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_jobs))
+	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_employees))
+	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_job_history))
+}

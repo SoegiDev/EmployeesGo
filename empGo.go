@@ -497,10 +497,13 @@ func (a *EmployeeSet) DeleteEmployee(employeeId uint) error {
 	return nil
 }
 
-func (a *EmployeeSet) GetEmployeeId(id string) (Employee, error) {
+func (a *EmployeeSet) GetEmployeeId(id string) (EmployeeMeta, error) {
 	var dbEmployee Employee
+	var dbDP Department
+	var dbJob Job
+	var returnMeta EmployeeMeta
 	if NullString(id) == nil {
-		return dbEmployee, ErrParameterRequest
+		return returnMeta, ErrParameterRequest
 	}
 	conv, _ := strconv.Atoi(id)
 	employeeId := uint(conv)
@@ -508,12 +511,32 @@ func (a *EmployeeSet) GetEmployeeId(id string) (Employee, error) {
 	res := a.DB.Where("id = ?", employeeId).First(&dbEmployee)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbEmployee, ErrEmployeeNotFound
+			return returnMeta, ErrEmployeeNotFound
 		}
-
 	}
+	if dbEmployee.DepartmentID > 0 {
+		_ = a.DB.Where("id = ?", dbEmployee.DepartmentID).First(&dbDP)
+	}
+	if dbEmployee.JobID > 0 {
+		_ = a.DB.Where("id = ?", dbEmployee.JobID).First(&dbJob)
+	}
+	returnMeta = EmployeeMeta{
+		ID:          dbEmployee.ID,
+		CustomID:    dbEmployee.CustomID,
+		EmployeeID:  dbEmployee.EmployeeID,
+		FirstName:   dbEmployee.FirstName,
+		LastName:    dbEmployee.LastName,
+		Email:       dbEmployee.Email,
+		PhoneNumber: dbEmployee.PhoneNumber,
+		JobID:       dbEmployee.JobID,
+		Salary:      dbEmployee.Salary,
+		Picture:     dbEmployee.Picture,
+		ManagerID:   dbEmployee.ManagerID,
+		Department:  dbDP,
+		Job:         dbJob}
+
 	// Get the Employee Single Data
-	return dbEmployee, nil
+	return returnMeta, nil
 }
 
 func (a *EmployeeSet) GetEmployee() ([]Employee, error) {
