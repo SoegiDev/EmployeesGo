@@ -89,10 +89,13 @@ func (a *EmployeeSet) DeleteDepartment(departmentId uint) error {
 	return nil
 }
 
-func (a *EmployeeSet) GetDepartmentId(id string) (Department, error) {
+func (a *EmployeeSet) GetDepartmentId(id string) (DepartmentResponse, error) {
 	var dbDepartment Department
+	var departmentResponse DepartmentResponse
+	var dbLocation Location
+	var dbEmp Employee
 	if NullString(id) != nil {
-		return dbDepartment, ErrDepartmentNotFound
+		return departmentResponse, ErrDepartmentNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	departmentId := uint(conv)
@@ -100,12 +103,23 @@ func (a *EmployeeSet) GetDepartmentId(id string) (Department, error) {
 	res := a.DB.Where("id = ?", departmentId).First(&dbDepartment)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbDepartment, ErrDepartmentNotFound
+			return departmentResponse, ErrDepartmentNotFound
 		}
-
 	}
+	if dbDepartment.LocationID > 0 {
+		_ = a.DB.Where("id = ?", dbDepartment.LocationID).First(&dbLocation)
+	}
+	if dbDepartment.ManagerID > 0 {
+		_ = a.DB.Where("id = ?", dbDepartment.ManagerID).First(&dbEmp)
+	}
+	departmentResponse = DepartmentResponse{
+		ID:             dbDepartment.ID,
+		DepartmentName: dbDepartment.DepartmentName,
+		Manager:        dbEmp,
+		Location:       dbLocation,
+		CompanyID:      dbDepartment.CompanyID}
 	// Get the Department Single Data
-	return dbDepartment, nil
+	return departmentResponse, nil
 }
 
 func (a *EmployeeSet) GetDepartment() ([]Department, error) {
@@ -157,10 +171,12 @@ func (a *EmployeeSet) DeleteCountry(countryId uint) error {
 	return nil
 }
 
-func (a *EmployeeSet) GetCountryId(id string) (Country, error) {
+func (a *EmployeeSet) GetCountryId(id string) (CountryResponse, error) {
 	var dbCountry Country
+	var countryResponse CountryResponse
+	var dbRegion Region
 	if NullString(id) != nil {
-		return dbCountry, ErrCountryNotFound
+		return countryResponse, ErrCountryNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	countryId := uint(conv)
@@ -168,12 +184,20 @@ func (a *EmployeeSet) GetCountryId(id string) (Country, error) {
 	res := a.DB.Where("id = ?", countryId).First(&dbCountry)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbCountry, ErrCountryNotFound
+			return countryResponse, ErrCountryNotFound
 		}
 
 	}
+	if dbCountry.RegionID > 0 {
+		_ = a.DB.Where("id = ?", dbCountry.RegionID).First(&dbRegion)
+	}
+
+	countryResponse = CountryResponse{
+		ID:          dbCountry.ID,
+		CountryName: dbCountry.CountryName,
+		Region:      dbRegion}
 	// Get the Country Single Data
-	return dbCountry, nil
+	return countryResponse, nil
 }
 
 func (a *EmployeeSet) GetCountry() ([]Country, error) {
@@ -225,10 +249,12 @@ func (a *EmployeeSet) DeleteLocation(locationId uint) error {
 	return nil
 }
 
-func (a *EmployeeSet) GetLocationId(id string) (Location, error) {
+func (a *EmployeeSet) GetLocationId(id string) (LocationResponse, error) {
 	var dbLocation Location
+	var locationResponse LocationResponse
+	var dbCountry Country
 	if NullString(id) != nil {
-		return dbLocation, ErrLocationNotFound
+		return locationResponse, ErrLocationNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	locationId := uint(conv)
@@ -236,12 +262,22 @@ func (a *EmployeeSet) GetLocationId(id string) (Location, error) {
 	res := a.DB.Where("id = ?", locationId).First(&dbLocation)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbLocation, ErrLocationNotFound
+			return locationResponse, ErrLocationNotFound
 		}
-
 	}
+	if dbLocation.CountryID > 0 {
+		_ = a.DB.Where("id = ?", dbLocation.CountryID).First(&dbCountry)
+	}
+
+	locationResponse = LocationResponse{
+		ID:            dbLocation.ID,
+		StreetAddress: dbLocation.StreetAddress,
+		PostalCode:    dbLocation.PostalCode,
+		City:          dbLocation.City,
+		StateProvince: dbLocation.StateProvince,
+		Country:       dbCountry}
 	// Get the Location Single Data
-	return dbLocation, nil
+	return locationResponse, nil
 }
 
 func (a *EmployeeSet) GetLocation() ([]Location, error) {
@@ -429,10 +465,13 @@ func (a *EmployeeSet) DeleteJobHistory(jobId uint) error {
 	return nil
 }
 
-func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistory, error) {
+func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistoryResponse, error) {
 	var dbJob JobHistory
+	var returnJob JobHistoryResponse
+	var dbJ Job
+	var dbDepart Department
 	if NullString(id) != nil {
-		return dbJob, ErrJobHistoryNotFound
+		return returnJob, ErrJobHistoryNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	jobId := uint(conv)
@@ -440,12 +479,25 @@ func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistory, error) {
 	res := a.DB.Where("id = ?", jobId).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrJobHistoryNotFound
+			return returnJob, ErrJobHistoryNotFound
 		}
 
 	}
+	if dbJob.JobID > 0 {
+		_ = a.DB.Where("id = ?", dbJob.JobID).First(&dbJ)
+	}
+	if dbJob.JobID > 0 {
+		_ = a.DB.Where("id = ?", dbJob.DepartmentID).First(&dbDepart)
+	}
+	returnJob = JobHistoryResponse{
+		ID:         dbJob.ID,
+		EmployeeID: dbJob.EmployeeID,
+		StartDate:  dbJob.StartDate,
+		EndDate:    dbJob.EndDate,
+		Job:        dbJ,
+		Department: dbDepart}
 	// Get the Job History Single Data
-	return dbJob, nil
+	return returnJob, nil
 }
 
 func (a *EmployeeSet) GetJobHistory() ([]JobHistory, error) {
@@ -497,11 +549,11 @@ func (a *EmployeeSet) DeleteEmployee(employeeId uint) error {
 	return nil
 }
 
-func (a *EmployeeSet) GetEmployeeId(id string) (EmployeeMeta, error) {
+func (a *EmployeeSet) GetEmployeeId(id string) (EmployeeResponse, error) {
 	var dbEmployee Employee
 	var dbDP Department
 	var dbJob Job
-	var returnMeta EmployeeMeta
+	var returnMeta EmployeeResponse
 	if NullString(id) == nil {
 		return returnMeta, ErrParameterRequest
 	}
@@ -520,7 +572,7 @@ func (a *EmployeeSet) GetEmployeeId(id string) (EmployeeMeta, error) {
 	if dbEmployee.JobID > 0 {
 		_ = a.DB.Where("id = ?", dbEmployee.JobID).First(&dbJob)
 	}
-	returnMeta = EmployeeMeta{
+	returnMeta = EmployeeResponse{
 		ID:          dbEmployee.ID,
 		CustomID:    dbEmployee.CustomID,
 		EmployeeID:  dbEmployee.EmployeeID,

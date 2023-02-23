@@ -6,6 +6,12 @@ type Country struct {
 	RegionID    uint
 }
 
+type CountryResponse struct {
+	ID          uint
+	CountryName string
+	Region      Region
+}
+
 func (r Country) TableName() string {
 	return tablePrefix + "countries"
 }

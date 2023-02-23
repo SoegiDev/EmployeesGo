@@ -15,7 +15,7 @@ type Employee struct {
 	DepartmentID uint
 }
 
-type EmployeeMeta struct {
+type EmployeeResponse struct {
 	ID          uint
 	CustomID    string
 	EmployeeID  string

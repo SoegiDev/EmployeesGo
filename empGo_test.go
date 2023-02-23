@@ -256,11 +256,11 @@ func TestCreateEmployee(t *testing.T) {
 		LastName:     "Name",
 		Email:        "test@gmail.com",
 		PhoneNumber:  "12312312312",
-		JobID:        0,
+		JobID:        1,
 		Salary:       90000000,
 		Picture:      "",
 		ManagerID:    0,
-		DepartmentID: 0}
+		DepartmentID: 1}
 	err := empGo.CreateEmployee(data)
 	if err != nil {
 		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
@@ -348,7 +348,7 @@ func TestGetEmployee(t *testing.T) {
 	if c == 0 {
 		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
 	} else {
-		var empData EmployeesGo.Employee
+		var empData EmployeesGo.EmployeeMeta
 		params := strconv.FormatUint(uint64(data), 10)
 		empData, err := empGo.GetEmployeeId(params)
 		if err != nil {
