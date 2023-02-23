@@ -384,6 +384,136 @@ func TestGetCountry(t *testing.T) {
 	}
 }
 
+func TestGetRegion(t *testing.T) {
+	var table string = "get Region"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var c int64
+
+	var data uint = 1
+	res := db.Model(EmployeesGo.Region{}).Where("id = ?", data).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
+	} else {
+		var empData EmployeesGo.Region
+		params := strconv.FormatUint(uint64(data), 10)
+		empData, err := empGo.GetRegionId(params)
+		if err != nil {
+			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+		}
+		fmt.Println(empData)
+	}
+}
+
+func TestGetDepartment(t *testing.T) {
+	var table string = "get Department"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var c int64
+
+	var data uint = 1
+	res := db.Model(EmployeesGo.Department{}).Where("id = ?", data).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
+	} else {
+		var empData EmployeesGo.DepartmentResponse
+		params := strconv.FormatUint(uint64(data), 10)
+		empData, err := empGo.GetDepartmentId(params)
+		if err != nil {
+			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+		}
+		fmt.Println(empData)
+	}
+}
+
+func TestGetLocation(t *testing.T) {
+	var table string = "get location"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var c int64
+
+	var data uint = 1
+	res := db.Model(EmployeesGo.Location{}).Where("id = ?", data).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
+	} else {
+		var empData EmployeesGo.LocationResponse
+		params := strconv.FormatUint(uint64(data), 10)
+		empData, err := empGo.GetLocationId(params)
+		if err != nil {
+			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+		}
+		fmt.Println(empData)
+	}
+}
+
+func TestGetJob(t *testing.T) {
+	var table string = "get country"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var c int64
+
+	var data uint = 1
+	res := db.Model(EmployeesGo.Job{}).Where("id = ?", data).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
+	} else {
+		var empData EmployeesGo.Job
+		params := strconv.FormatUint(uint64(data), 10)
+		empData, err := empGo.GetJobId(params)
+		if err != nil {
+			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+		}
+		fmt.Println(empData)
+	}
+}
+
+func TestGetJobHistory(t *testing.T) {
+	var table string = "get country"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var c int64
+
+	var data uint = 1
+	res := db.Model(EmployeesGo.JobHistory{}).Where("id = ?", data).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
+	} else {
+		var empData EmployeesGo.JobHistoryResponse
+		params := strconv.FormatUint(uint64(data), 10)
+		empData, err := empGo.GetJobHistoryId(params)
+		if err != nil {
+			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+		}
+		fmt.Println(empData)
+	}
+}
+
 func TestCleanUp(t *testing.T) {
 	tbl_regions := `"employeeGo_regions"`
 	tbl_countries := `"employeeGo_countries"`

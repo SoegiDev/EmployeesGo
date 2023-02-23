@@ -32,7 +32,7 @@ var (
 	ErrCountryNotFound    = errors.New("Country Not Found")
 	ErrLocationNotFound   = errors.New("Location Not Found")
 	ErrEmployeeNotFound   = errors.New("Employee Not Found")
-	ErrParameterNotFound  = errors.New("Parameter Not Read")
+	ErrParameterNotFound  = errors.New("parameter Not Found")
 	ErrJobNotFound        = errors.New("Job Not Found")
 	ErrJobHistoryNotFound = errors.New("Job History Not Found")
 	ErrRegionNotFound     = errors.New("Region Not Found")
@@ -55,13 +55,18 @@ func Resolve() *EmployeeSet {
 // DEPARTMENT //
 func (a *EmployeeSet) CreateDepartment(data Department) error {
 	var dbDepartment Department
-	res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
+	//res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
+	res := a.DB.FirstOrCreate(&dbDepartment, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(&data)
-			return nil
+		if errors.Is(res.Error, gorm.ErrInvalidDB) {
+			//a.DB.Create(&data)
+			return res.Error
 		}
 	}
+	if res.RowsAffected == 1 {
+		return nil
+	}
+
 	return res.Error
 }
 
