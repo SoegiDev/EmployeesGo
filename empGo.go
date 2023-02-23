@@ -32,7 +32,7 @@ var (
 	ErrCountryNotFound    = errors.New("Country Not Found")
 	ErrLocationNotFound   = errors.New("Location Not Found")
 	ErrEmployeeNotFound   = errors.New("Employee Not Found")
-	ErrParameterRequest   = errors.New("Parameter Not Read")
+	ErrParameterNotFound  = errors.New("Parameter Not Read")
 	ErrJobNotFound        = errors.New("Job Not Found")
 	ErrJobHistoryNotFound = errors.New("Job History Not Found")
 	ErrRegionNotFound     = errors.New("Region Not Found")
@@ -94,7 +94,7 @@ func (a *EmployeeSet) GetDepartmentId(id string) (DepartmentResponse, error) {
 	var departmentResponse DepartmentResponse
 	var dbLocation Location
 	var dbEmp Employee
-	if NullString(id) != nil {
+	if NullString(id) == nil {
 		return departmentResponse, ErrDepartmentNotFound
 	}
 	conv, _ := strconv.Atoi(id)
@@ -175,8 +175,8 @@ func (a *EmployeeSet) GetCountryId(id string) (CountryResponse, error) {
 	var dbCountry Country
 	var countryResponse CountryResponse
 	var dbRegion Region
-	if NullString(id) != nil {
-		return countryResponse, ErrCountryNotFound
+	if NullString(id) == nil {
+		return countryResponse, ErrParameterNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	countryId := uint(conv)
@@ -253,7 +253,7 @@ func (a *EmployeeSet) GetLocationId(id string) (LocationResponse, error) {
 	var dbLocation Location
 	var locationResponse LocationResponse
 	var dbCountry Country
-	if NullString(id) != nil {
+	if NullString(id) == nil {
 		return locationResponse, ErrLocationNotFound
 	}
 	conv, _ := strconv.Atoi(id)
@@ -331,7 +331,7 @@ func (a *EmployeeSet) DeleteRegion(regionId uint) error {
 
 func (a *EmployeeSet) GetRegionId(id string) (Region, error) {
 	var dbRegion Region
-	if NullString(id) != nil {
+	if NullString(id) == nil {
 		return dbRegion, ErrRegionNotFound
 	}
 	conv, _ := strconv.Atoi(id)
@@ -399,7 +399,7 @@ func (a *EmployeeSet) DeleteJob(jobId uint) error {
 
 func (a *EmployeeSet) GetJobId(id string) (Job, error) {
 	var dbJob Job
-	if NullString(id) != nil {
+	if NullString(id) == nil {
 		return dbJob, ErrJobNotFound
 	}
 	conv, _ := strconv.Atoi(id)
@@ -470,7 +470,7 @@ func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistoryResponse, error) {
 	var returnJob JobHistoryResponse
 	var dbJ Job
 	var dbDepart Department
-	if NullString(id) != nil {
+	if NullString(id) == nil {
 		return returnJob, ErrJobHistoryNotFound
 	}
 	conv, _ := strconv.Atoi(id)
@@ -555,7 +555,7 @@ func (a *EmployeeSet) GetEmployeeId(id string) (EmployeeResponse, error) {
 	var dbJob Job
 	var returnMeta EmployeeResponse
 	if NullString(id) == nil {
-		return returnMeta, ErrParameterRequest
+		return returnMeta, ErrParameterNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	employeeId := uint(conv)

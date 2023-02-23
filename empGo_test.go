@@ -359,7 +359,7 @@ func TestGetEmployee(t *testing.T) {
 }
 
 func TestGetCountry(t *testing.T) {
-	var table string = "get_employee"
+	var table string = "get country"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
