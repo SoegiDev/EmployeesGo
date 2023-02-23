@@ -386,7 +386,7 @@ func (a *EmployeeSet) GetRegion() ([]Region, error) {
 // JOB //
 func (a *EmployeeSet) CreateJob(data Job) error {
 	var dbJob Job
-	res := a.DB.Where("job_title = ?", data.JobTitle).First(&dbJob)
+	//res := a.DB.Where("job_title = ?", data.JobTitle).First(&dbJob)
 	res := a.DB.FirstOrCreate(&dbJob, data)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
