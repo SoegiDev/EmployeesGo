@@ -1,8 +1,10 @@
 package EmployeesGo
 
+import ("time")
+
 type Employee struct {
 	ID           uint
-	CustomID     string
+	CustomID     string `gorm:"size:255;null;unique"`
 	EmployeeID   string
 	FirstName    string
 	LastName     string
@@ -11,6 +13,9 @@ type Employee struct {
 	JobID        uint
 	Salary       uint64
 	Picture      string
+	Active bool
+	CreatedDate time.Time
+	Contract bool
 	ManagerID    uint
 	DepartmentID uint
 }

@@ -36,6 +36,7 @@ var (
 	ErrJobNotFound        = errors.New("Job Not Found")
 	ErrJobHistoryNotFound = errors.New("Job History Not Found")
 	ErrRegionNotFound     = errors.New("Region Not Found")
+	ErrIsExisted          = errors.New("Data Already Exist")
 )
 
 func migrateTables(db *gorm.DB) {
@@ -58,7 +59,7 @@ func (a *EmployeeSet) CreateDepartment(data Department) error {
 	//res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
 	res := a.DB.FirstOrCreate(&dbDepartment, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidDB) {
+		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
 			//a.DB.Create(&data)
 			return res.Error
 		}
@@ -66,8 +67,9 @@ func (a *EmployeeSet) CreateDepartment(data Department) error {
 	if res.RowsAffected == 1 {
 		return nil
 	}
+	//a.DB.Create(&data)
+	return ErrIsExisted
 
-	return res.Error
 }
 
 func (a *EmployeeSet) UpdateDepartment(departmentId uint, data map[string]interface{}) error {
