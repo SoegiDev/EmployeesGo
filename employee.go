@@ -4,8 +4,8 @@ import ("time")
 
 type Employee struct {
 	ID           uint
-	CustomID     string `gorm:"size:255;null;unique"`
-	EmployeeID   string
+	CustomID     string `gorm:"size:50;default:null;unique"`
+	EmployeeID   string `gorm:"size:50;default:null;unique"`
 	FirstName    string
 	LastName     string
 	Email        string
