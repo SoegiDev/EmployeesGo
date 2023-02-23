@@ -32,6 +32,7 @@ var (
 	ErrCountryNotFound    = errors.New("Country Not Found")
 	ErrLocationNotFound   = errors.New("Location Not Found")
 	ErrEmployeeNotFound   = errors.New("Employee Not Found")
+	ErrParameterRequest   = errors.New("Parameter Not Read")
 	ErrJobNotFound        = errors.New("Job Not Found")
 	ErrJobHistoryNotFound = errors.New("Job History Not Found")
 	ErrRegionNotFound     = errors.New("Region Not Found")
@@ -499,7 +500,7 @@ func (a *EmployeeSet) DeleteEmployee(employeeId uint) error {
 func (a *EmployeeSet) GetEmployeeId(id string) (Employee, error) {
 	var dbEmployee Employee
 	if NullString(id) != nil {
-		return dbEmployee, ErrEmployeeNotFound
+		return dbEmployee, ErrParameterRequest
 	}
 	conv, _ := strconv.Atoi(id)
 	employeeId := uint(conv)

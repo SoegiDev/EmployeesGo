@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
-	EmployeesGo "github.com/SoegiDev/EmployeesGo"
+	"github.com/SoegiDev/EmployeesGo"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -329,12 +330,47 @@ func TestCreateJobHistory(t *testing.T) {
 	//db.Where("job_id = ?", data.JobID).Delete(EmployeesGo.JobHistory{})
 }
 
-func TestCleanUp(t *testing.T) {
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Region{})
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Country{})
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Location{})
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Department{})
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Job{})
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.Employee{})
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&EmployeesGo.JobHistory{})
+// RETRIEVE
+// EMPLOYEE //
+func TestGetEmployee(t *testing.T) {
+	var table string = "get_employee"
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var c int64
+
+	var data uint = 1
+	res := db.Model(EmployeesGo.Employee{}).Where("id = ?", data).Count(&c)
+	if res.Error != nil {
+		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
+	}
+	if c == 0 {
+		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
+	} else {
+		var empData EmployeesGo.Employee
+		params := strconv.FormatUint(uint64(data), 10)
+		empData, err := empGo.GetEmployeeId(params)
+		if err != nil {
+			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+		}
+		fmt.Println(empData)
+	}
 }
+
+// func TestCleanUp(t *testing.T) {
+// 	tbl_regions := `"employeeGo_regions"`
+// 	tbl_countries := `"employeeGo_countries"`
+// 	tbl_locations := `"employeeGo_locations"`
+// 	tbl_departments := `"employeeGo_departments"`
+// 	tbl_jobs := `"employeeGo_jobs"`
+// 	tbl_employees := `"employeeGo_employees"`
+// 	tbl_job_history := `"employeeGo_job_history"`
+// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_regions))
+// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_countries))
+// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_locations))
+// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_departments))
+// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_jobs))
+// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_employees))
+// 	db.Exec(fmt.Sprintf("truncate table %s restart identity;", tbl_job_history))
+// }
