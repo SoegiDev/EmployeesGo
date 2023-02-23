@@ -36,7 +36,7 @@ var (
 	ErrJobNotFound        = errors.New("Job Not Found")
 	ErrJobHistoryNotFound = errors.New("Job History Not Found")
 	ErrRegionNotFound     = errors.New("Region Not Found")
-	ErrIsExisted          = errors.New("Data Already Exist")
+	ErrDataIsExisted          = errors.New("data Already Exist")
 )
 
 func migrateTables(db *gorm.DB) {
@@ -68,7 +68,7 @@ func (a *EmployeeSet) CreateDepartment(data Department) error {
 		return nil
 	}
 	//a.DB.Create(&data)
-	return ErrIsExisted
+	return ErrDataIsExisted
 
 }
 
@@ -145,14 +145,19 @@ func (a *EmployeeSet) GetDepartment() ([]Department, error) {
 // COUNTRY //
 func (a *EmployeeSet) CreateCountry(data Country) error {
 	var dbCountry Country
-	res := a.DB.Where("country_name = ?", data.CountryName).First(&dbCountry)
+	//res := a.DB.Where("country_name = ?", data.CountryName).First(&dbCountry)
+	res := a.DB.FirstOrCreate(&dbCountry, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(&data)
-			return nil
+		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
+			//a.DB.Create(&data)
+			return res.Error
 		}
 	}
-	return res.Error
+	if res.RowsAffected == 1 {
+		return nil
+	}
+	//a.DB.Create(&data)
+	return ErrDataIsExisted
 }
 
 func (a *EmployeeSet) UpdateCountry(countryId uint, data map[string]interface{}) error {
@@ -223,14 +228,19 @@ func (a *EmployeeSet) GetCountry() ([]Country, error) {
 // LOCATION //
 func (a *EmployeeSet) CreateLocation(data Location) error {
 	var dbLocation Location
-	res := a.DB.Where("street_address = ?", data.StreetAddress).First(&dbLocation)
+	//res := a.DB.Where("street_address = ?", data.StreetAddress).First(&dbLocation)
+	res := a.DB.FirstOrCreate(&dbLocation, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(&data)
-			return nil
+		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
+			//a.DB.Create(&data)
+			return res.Error
 		}
 	}
-	return res.Error
+	if res.RowsAffected == 1 {
+		return nil
+	}
+	//a.DB.Create(&data)
+	return ErrDataIsExisted
 }
 
 func (a *EmployeeSet) UpdateLocation(locationId uint, data map[string]interface{}) error {
@@ -303,14 +313,19 @@ func (a *EmployeeSet) GetLocation() ([]Location, error) {
 // REGION //
 func (a *EmployeeSet) CreateRegion(data Region) error {
 	var dbRegion Region
-	res := a.DB.Where("region_name = ?", data.RegionName).First(&dbRegion)
+	//res := a.DB.Where("region_name = ?", data.RegionName).First(&dbRegion)
+	res := a.DB.FirstOrCreate(&dbRegion, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(&data)
-			return nil
+		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
+			//a.DB.Create(&data)
+			return res.Error
 		}
 	}
-	return res.Error
+	if res.RowsAffected == 1 {
+		return nil
+	}
+	//a.DB.Create(&data)
+	return ErrDataIsExisted
 }
 
 func (a *EmployeeSet) UpdateRegion(regionId uint, data map[string]interface{}) error {
@@ -372,13 +387,18 @@ func (a *EmployeeSet) GetRegion() ([]Region, error) {
 func (a *EmployeeSet) CreateJob(data Job) error {
 	var dbJob Job
 	res := a.DB.Where("job_title = ?", data.JobTitle).First(&dbJob)
+	res := a.DB.FirstOrCreate(&dbJob, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(&data)
-			return nil
+		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
+			//a.DB.Create(&data)
+			return res.Error
 		}
 	}
-	return res.Error
+	if res.RowsAffected == 1 {
+		return nil
+	}
+	//a.DB.Create(&data)
+	return ErrDataIsExisted
 }
 
 func (a *EmployeeSet) UpdateJob(jobId uint, data map[string]interface{}) error {
@@ -438,15 +458,20 @@ func (a *EmployeeSet) GetJob() ([]Job, error) {
 
 // JOB HISTORY //
 func (a *EmployeeSet) CreateJobHistory(data JobHistory) error {
-	var dbJob JobHistory
-	res := a.DB.Where("job_id = ?", data.JobID).First(&dbJob)
+	var dbJobHistory JobHistory
+	//res := a.DB.Where("job_id = ?", data.JobID).First(&dbJob)
+	res := a.DB.FirstOrCreate(&dbJobHistory, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(&data)
-			return nil
+		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
+			//a.DB.Create(&data)
+			return res.Error
 		}
 	}
-	return res.Error
+	if res.RowsAffected == 1 {
+		return nil
+	}
+	//a.DB.Create(&data)
+	return ErrDataIsExisted
 }
 
 func (a *EmployeeSet) UpdateJobHistory(jobId uint, data map[string]interface{}) error {
@@ -523,14 +548,19 @@ func (a *EmployeeSet) GetJobHistory() ([]JobHistory, error) {
 // EMPLOYEE //
 func (a *EmployeeSet) CreateEmployee(data Employee) error {
 	var dbEmployee Employee
-	res := a.DB.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).First(&dbEmployee)
+	//res := a.DB.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).First(&dbEmployee)
+	res := a.DB.FirstOrCreate(&dbEmployee, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			a.DB.Create(&data)
-			return nil
+		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
+			//a.DB.Create(&data)
+			return res.Error
 		}
 	}
-	return res.Error
+	if res.RowsAffected == 1 {
+		return nil
+	}
+	//a.DB.Create(&data)
+	return ErrDataIsExisted
 }
 
 func (a *EmployeeSet) UpdateEmployee(employeeId uint, data map[string]interface{}) error {

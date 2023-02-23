@@ -8,7 +8,7 @@ type Employee struct {
 	EmployeeID   string `gorm:"size:50;default:null;unique"`
 	FirstName    string
 	LastName     string
-	Email        string
+	Email        string `gorm:"size:100;default:null;unique"`
 	PhoneNumber  string
 	JobID        uint
 	Salary       uint64
