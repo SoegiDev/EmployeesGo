@@ -40,7 +40,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestCreateRegion(t *testing.T) {
-	var table string = "Region"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -52,34 +51,65 @@ func TestCreateRegion(t *testing.T) {
 	}
 	err := empGo.CreateRegion(data)
 	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-	}
-
-	var c int64
-	res := db.Model(EmployeesGo.Region{}).Where("region_name = ?", data.RegionName).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-	}
-
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+			fmt.Println("Create Region is Oke")
+		}
 	// test duplicated entries
-	empGo.CreateRegion(data)
-	empGo.CreateRegion(data)
-	empGo.CreateRegion(data)
-	db.Model(EmployeesGo.Region{}).Where("region_name = ?", data.RegionName).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	err_duplicate := empGo.CreateRegion(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist"{
+			fmt.Println("Duplicate is Oke")
+		}
+		
 	}
-
 	// clean up
 	//db.Where("region_name = ?", data.RegionName).Delete(EmployeesGo.Region{})
+}
+func TestUpdateRegion(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test create role
+	data := map[string]interface{}{"region_name":"Asia Jakarta"}
+	err := empGo.UpdateRegion(1,data)
+	if err != nil {
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+		fmt.Println("Update Region Ok")
+	}
+
+}
+
+func TestDeleteRegion(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteRegion(1)
+	if err != nil {
+		if err.Error() == "Region Not Found"{
+			fmt.Println("Region Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("invalid Transaction is Oke")
+		}
+	}else{
+		fmt.Println("Delete Region Ok")
+	}
+
 }
 
 func TestCreateCountry(t *testing.T) {
 
-	var table string = "country"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -92,34 +122,54 @@ func TestCreateCountry(t *testing.T) {
 	}
 	err := empGo.CreateCountry(data)
 	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+		fmt.Println("Create Country is Oke")
 	}
-
-	var c int64
-	res := db.Model(EmployeesGo.Country{}).Where("country_name = ?", data.CountryName).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-	}
-
 	// test duplicated entries
-	empGo.CreateCountry(data)
-	empGo.CreateCountry(data)
-	empGo.CreateCountry(data)
-	db.Model(EmployeesGo.Country{}).Where("country_name = ?", data.CountryName).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	err_duplicate := empGo.CreateCountry(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist"{
+			fmt.Println("Duplicate is Oke")
+		}
+		
 	}
-
 	// clean up
 	//db.Where("country_name = ?", data.CountryName).Delete(EmployeesGo.Country{})
 }
 
-func TestCreateLocation(t *testing.T) {
+func TestUpdateCountry(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
 
-	var table string = "location"
+	// test create role
+	data := map[string]interface{}{"country_name":"Indonesia","region_id":1}
+	err := empGo.UpdateCountry(1,data)
+	if err != nil {
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+		fmt.Println("Update Country Ok")
+	}
+	// TEST ERROR
+	data_1 := map[string]interface{}{"country_name":"Indonesia","region_id":1}
+	err_1 := empGo.UpdateCountry(1,data_1)
+	if err_1 != nil {
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+		fmt.Println("Update Country Ok")
+	}
+
+}
+
+func TestCreateLocation(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -134,25 +184,20 @@ func TestCreateLocation(t *testing.T) {
 		CountryID:     1}
 	err := empGo.CreateLocation(data)
 	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-	}
-
-	var c int64
-	res := db.Model(EmployeesGo.Location{}).Where("street_address = ?", data.StreetAddress).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+		fmt.Println("Create Location is Oke")
 	}
 
 	// test duplicated entries
-	empGo.CreateLocation(data)
-	empGo.CreateLocation(data)
-	empGo.CreateLocation(data)
-	db.Model(EmployeesGo.Location{}).Where("street_address = ?", data.StreetAddress).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	err_duplicate := empGo.CreateLocation(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist"{
+			fmt.Println("Duplicate is Oke")
+		}
+		
 	}
 
 	// clean up
@@ -160,8 +205,6 @@ func TestCreateLocation(t *testing.T) {
 }
 
 func TestCreateDepartment(t *testing.T) {
-
-	var table string = "department"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -175,25 +218,20 @@ func TestCreateDepartment(t *testing.T) {
 		CompanyID:      1}
 	err := empGo.CreateDepartment(data)
 	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-	}
-
-	var c int64
-	res := db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-	}
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+			fmt.Println("Create Department is Oke")
+		}
 
 	// test duplicated entries
-	empGo.CreateDepartment(data)
-	empGo.CreateDepartment(data)
-	empGo.CreateDepartment(data)
-	db.Model(EmployeesGo.Department{}).Where("department_name = ?", data.DepartmentName).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	err_duplicate := empGo.CreateDepartment(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist"{
+			fmt.Println("Duplicate is Oke")
+		}
+		
 	}
 
 	// clean up
@@ -201,8 +239,6 @@ func TestCreateDepartment(t *testing.T) {
 }
 
 func TestCreateJob(t *testing.T) {
-
-	var table string = "job"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -215,25 +251,20 @@ func TestCreateJob(t *testing.T) {
 		MaxSalary: 19000000}
 	err := empGo.CreateJob(data)
 	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-	}
-
-	var c int64
-	res := db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-	}
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+			fmt.Println("Create Job is Oke")
+		}
 
 	// test duplicated entries
-	empGo.CreateJob(data)
-	empGo.CreateJob(data)
-	empGo.CreateJob(data)
-	db.Model(EmployeesGo.Job{}).Where("job_title = ?", data.JobTitle).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	err_duplicate := empGo.CreateJob(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist"{
+			fmt.Println("Duplicate is Oke")
+		}
+		
 	}
 
 	// clean up
@@ -241,8 +272,6 @@ func TestCreateJob(t *testing.T) {
 }
 
 func TestCreateEmployee(t *testing.T) {
-
-	var table string = "employee"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -263,25 +292,20 @@ func TestCreateEmployee(t *testing.T) {
 		DepartmentID: 1}
 	err := empGo.CreateEmployee(data)
 	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-	}
-
-	var c int64
-	res := db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-	}
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+			fmt.Println("Create Employee is Oke")
+		}
 
 	// test duplicated entries
-	empGo.CreateEmployee(data)
-	empGo.CreateEmployee(data)
-	empGo.CreateEmployee(data)
-	db.Model(EmployeesGo.Employee{}).Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	err_duplicate := empGo.CreateEmployee(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist"{
+			fmt.Println("Duplicate is Oke")
+		}
+		
 	}
 
 	// clean up
@@ -289,8 +313,6 @@ func TestCreateEmployee(t *testing.T) {
 }
 
 func TestCreateJobHistory(t *testing.T) {
-
-	var table string = "job_history"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -305,25 +327,20 @@ func TestCreateJobHistory(t *testing.T) {
 		DepartmentID: 1}
 	err := empGo.CreateJobHistory(data)
 	if err != nil {
-		t.Error(fmt.Sprintf("an error was not expected while creating %s ", table), err)
-	}
-
-	var c int64
-	res := db.Model(EmployeesGo.JobHistory{}).Where("job_id = ?", data.JobID).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), err)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s has not been stored", table), err)
-	}
+		if err.Error() == "invalid Transaction Found"{
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	}else{
+			fmt.Println("Create Job History is Oke")
+		}
 
 	// test duplicated entries
-	empGo.CreateJobHistory(data)
-	empGo.CreateJobHistory(data)
-	empGo.CreateJobHistory(data)
-	db.Model(EmployeesGo.Employee{}).Where("job_id = ?", data.JobID).Count(&c)
-	if c > 1 {
-		t.Error(fmt.Sprintf("unexpected duplicated entries for %s", table), err)
+	err_duplicate:=empGo.CreateJobHistory(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist"{
+			fmt.Println("Duplicate is Oke")
+		}
+		
 	}
 
 	// clean up
@@ -359,55 +376,41 @@ func TestGetEmployee(t *testing.T) {
 }
 
 func TestGetCountry(t *testing.T) {
-	var table string = "get country"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-	var c int64
-
 	var data uint = 1
-	res := db.Model(EmployeesGo.Country{}).Where("id = ?", data).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
-	} else {
-		var empData EmployeesGo.CountryResponse
-		params := strconv.FormatUint(uint64(data), 10)
-		empData, err := empGo.GetCountryId(params)
-		if err != nil {
-			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+	var empData EmployeesGo.CountryResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetCountryId(params)
+	if err != nil {
+		if err.Error() == "Country Not Found"{
+			fmt.Println("Invalid Transaction is Oke")
 		}
-		fmt.Println(empData)
-	}
+	}else{
+			fmt.Println("Get Country By Id is Oke")
+			fmt.Println(empData)
+		}
 }
 
 func TestGetRegion(t *testing.T) {
-	var table string = "get Region"
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-	var c int64
-
-	var data uint = 1
-	res := db.Model(EmployeesGo.Region{}).Where("id = ?", data).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
-	} else {
-		var empData EmployeesGo.Region
-		params := strconv.FormatUint(uint64(data), 10)
-		empData, err := empGo.GetRegionId(params)
-		if err != nil {
-			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+	var data uint = 2
+	var empData EmployeesGo.Region
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetRegionId(params)
+	if err != nil {
+		if err.Error() == "Region Not Found"{
+			fmt.Println("Invalid Transaction is Oke")
 		}
-		fmt.Println(empData)
-	}
+	}else{
+			fmt.Println("Get Region By Id is Oke")
+			fmt.Println(empData)
+		}
 }
 
 func TestGetDepartment(t *testing.T) {

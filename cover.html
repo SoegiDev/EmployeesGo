@@ -1,0 +1,910 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>EmployeesGo: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/SoegiDev/EmployeesGo/country.go (100.0%)</option>
+				
+				<option value="file1">github.com/SoegiDev/EmployeesGo/department.go (100.0%)</option>
+				
+				<option value="file2">github.com/SoegiDev/EmployeesGo/empGo.go (51.9%)</option>
+				
+				<option value="file3">github.com/SoegiDev/EmployeesGo/employee.go (100.0%)</option>
+				
+				<option value="file4">github.com/SoegiDev/EmployeesGo/job.go (100.0%)</option>
+				
+				<option value="file5">github.com/SoegiDev/EmployeesGo/job_history.go (100.0%)</option>
+				
+				<option value="file6">github.com/SoegiDev/EmployeesGo/location.go (100.0%)</option>
+				
+				<option value="file7">github.com/SoegiDev/EmployeesGo/region.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package EmployeesGo
+
+type Country struct {
+        ID          uint
+        CountryName string
+        RegionID    uint
+}
+
+type CountryResponse struct {
+        ID          uint
+        CountryName string
+        Region      Region
+}
+
+func (r Country) TableName() string <span class="cov8" title="1">{
+        return tablePrefix + "countries"
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package EmployeesGo
+
+type Department struct {
+        ID             uint
+        DepartmentName string
+        ManagerID      uint
+        LocationID     uint
+        CompanyID      uint
+}
+type DepartmentResponse struct {
+        ID             uint
+        DepartmentName string
+        Manager        Employee
+        Location       Location
+        CompanyID      uint
+}
+
+func (r Department) TableName() string <span class="cov8" title="1">{
+        return tablePrefix + "departments"
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package EmployeesGo
+
+import (
+        "errors"
+        "strconv"
+
+        "gorm.io/gorm"
+)
+
+var tablePrefix string
+
+type EmployeeSet struct {
+        DB *gorm.DB
+}
+
+type EmpOption struct {
+        TablesPrefix string
+        DB           *gorm.DB
+}
+
+var empSet *EmployeeSet
+
+func New(em EmpOption) *EmployeeSet <span class="cov8" title="1">{
+        tablePrefix = em.TablesPrefix
+        empSet = &amp;EmployeeSet{DB: em.DB}
+        migrateTables(em.DB)
+        return empSet
+}</span>
+
+var (
+        ErrDepartmentNotFound = errors.New("Department Not Found")
+        ErrCountryNotFound    = errors.New("Country Not Found")
+        ErrLocationNotFound   = errors.New("Location Not Found")
+        ErrEmployeeNotFound   = errors.New("Employee Not Found")
+        ErrParameterNotFound  = errors.New("parameter Not Found")
+        ErrJobNotFound        = errors.New("Job Not Found")
+        ErrJobHistoryNotFound = errors.New("Job History Not Found")
+        ErrRegionNotFound     = errors.New("Region Not Found")
+        ErrDataIsExisted          = errors.New("data Already Exist")
+        ErrInvalidTransaction = errors.New("invalid Transaction Found")
+)
+
+func migrateTables(db *gorm.DB) <span class="cov8" title="1">{
+        db.AutoMigrate(&amp;Region{})
+        db.AutoMigrate(&amp;Country{})
+        db.AutoMigrate(&amp;Location{})
+        db.AutoMigrate(&amp;Department{})
+        db.AutoMigrate(&amp;Employee{})
+        db.AutoMigrate(&amp;JobHistory{})
+        db.AutoMigrate(&amp;Job{})
+}</span>
+
+func Resolve() *EmployeeSet <span class="cov0" title="0">{
+        return empSet
+}</span>
+
+// DEPARTMENT //
+func (a *EmployeeSet) CreateDepartment(data Department) error <span class="cov8" title="1">{
+        var dbDepartment Department
+        //res := a.DB.Where("department_name = ?", data.DepartmentName).First(&amp;dbDepartment)
+        res := a.DB.FirstOrCreate(&amp;dbDepartment, data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                        return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">if res.RowsAffected == 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        //a.DB.Create(&amp;data)
+        <span class="cov8" title="1">return ErrDataIsExisted</span>
+
+}
+
+func (a *EmployeeSet) UpdateDepartment(departmentId uint, data map[string]interface{}) error <span class="cov0" title="0">{
+        var dbDepartment Department
+        res := a.DB.Model(&amp;dbDepartment).Where("id = ?", departmentId).Updates(data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return res.Error
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (a *EmployeeSet) DeleteDepartment(departmentId uint) error <span class="cov0" title="0">{
+        var dbDepartment Department
+        res := a.DB.Where("id = ?", departmentId).First(&amp;dbDepartment)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return ErrDepartmentNotFound
+                }</span>
+
+        }
+        // Delete the Department
+        <span class="cov0" title="0">a.DB.Where("id = ?", departmentId).Delete(Department{})
+
+        return nil</span>
+}
+
+func (a *EmployeeSet) GetDepartmentId(id string) (DepartmentResponse, error) <span class="cov8" title="1">{
+        var dbDepartment Department
+        var departmentResponse DepartmentResponse
+        var dbLocation Location
+        var dbEmp Employee
+        if NullString(id) == nil </span><span class="cov0" title="0">{
+                return departmentResponse, ErrDepartmentNotFound
+        }</span>
+        <span class="cov8" title="1">conv, _ := strconv.Atoi(id)
+        departmentId := uint(conv)
+
+        res := a.DB.Where("id = ?", departmentId).First(&amp;dbDepartment)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return departmentResponse, ErrDepartmentNotFound
+                }</span>
+        }
+        <span class="cov8" title="1">if dbDepartment.LocationID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbDepartment.LocationID).First(&amp;dbLocation)
+        }</span>
+        <span class="cov8" title="1">if dbDepartment.ManagerID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbDepartment.ManagerID).First(&amp;dbEmp)
+        }</span>
+        <span class="cov8" title="1">departmentResponse = DepartmentResponse{
+                ID:             dbDepartment.ID,
+                DepartmentName: dbDepartment.DepartmentName,
+                Manager:        dbEmp,
+                Location:       dbLocation,
+                CompanyID:      dbDepartment.CompanyID}
+        // Get the Department Single Data
+        return departmentResponse, nil</span>
+}
+
+func (a *EmployeeSet) GetDepartment() ([]Department, error) <span class="cov0" title="0">{
+        var dbDepartment []Department
+        res := a.DB.Find(&amp;dbDepartment)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbDepartment, ErrDepartmentNotFound
+                }</span>
+
+        }
+        // Get the Department Single Data
+        <span class="cov0" title="0">return dbDepartment, nil</span>
+}
+
+// COUNTRY //
+func (a *EmployeeSet) CreateCountry(data Country) error <span class="cov8" title="1">{
+        var dbCountry Country
+        //res := a.DB.Where("country_name = ?", data.CountryName).First(&amp;dbCountry)
+        res := a.DB.FirstOrCreate(&amp;dbCountry, data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">if res.RowsAffected == 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        //a.DB.Create(&amp;data)
+        <span class="cov8" title="1">return ErrDataIsExisted</span>
+}
+
+func (a *EmployeeSet) UpdateCountry(countryId uint, data map[string]interface{}) error <span class="cov8" title="1">{
+        var dbCountry Country
+        res := a.DB.Model(&amp;dbCountry).Where("id = ?", countryId).Updates(data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (a *EmployeeSet) DeleteCountry(countryId uint) error <span class="cov0" title="0">{
+        var dbCountry Country
+        res := a.DB.Where("id = ?", countryId).First(&amp;dbCountry)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return ErrCountryNotFound
+                }</span>
+
+        }
+        // Delete the Country
+        <span class="cov0" title="0">a.DB.Where("id = ?", countryId).Delete(Country{})
+        return nil</span>
+}
+
+func (a *EmployeeSet) GetCountryId(id string) (CountryResponse, error) <span class="cov8" title="1">{
+        var dbCountry Country
+        var countryResponse CountryResponse
+        var dbRegion Region
+        if NullString(id) == nil </span><span class="cov0" title="0">{
+                return countryResponse, ErrParameterNotFound
+        }</span>
+        <span class="cov8" title="1">conv, _ := strconv.Atoi(id)
+        countryId := uint(conv)
+
+        res := a.DB.Where("id = ?", countryId).First(&amp;dbCountry)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return countryResponse, ErrCountryNotFound
+                }</span>
+
+        }
+        <span class="cov8" title="1">if dbCountry.RegionID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbCountry.RegionID).First(&amp;dbRegion)
+        }</span>
+
+        <span class="cov8" title="1">countryResponse = CountryResponse{
+                ID:          dbCountry.ID,
+                CountryName: dbCountry.CountryName,
+                Region:      dbRegion}
+        // Get the Country Single Data
+        return countryResponse, nil</span>
+}
+
+func (a *EmployeeSet) GetCountry() ([]Country, error) <span class="cov0" title="0">{
+        var dbCountry []Country
+        res := a.DB.Find(&amp;dbCountry)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbCountry, ErrCountryNotFound
+                }</span>
+
+        }
+        // Get the Country Single Data
+        <span class="cov0" title="0">return dbCountry, nil</span>
+}
+
+// LOCATION //
+func (a *EmployeeSet) CreateLocation(data Location) error <span class="cov8" title="1">{
+        var dbLocation Location
+        //res := a.DB.Where("street_address = ?", data.StreetAddress).First(&amp;dbLocation)
+        res := a.DB.FirstOrCreate(&amp;dbLocation, data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">if res.RowsAffected == 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        //a.DB.Create(&amp;data)
+        <span class="cov8" title="1">return ErrDataIsExisted</span>
+}
+
+func (a *EmployeeSet) UpdateLocation(locationId uint, data map[string]interface{}) error <span class="cov0" title="0">{
+        var dbLocation Location
+        res := a.DB.Model(&amp;dbLocation).Where("id = ?", locationId).Updates(data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return res.Error
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (a *EmployeeSet) DeleteLocation(locationId uint) error <span class="cov0" title="0">{
+        var dbLocation Location
+        res := a.DB.Where("id = ?", locationId).First(&amp;dbLocation)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return ErrLocationNotFound
+                }</span>
+
+        }
+        // Delete the Country
+        <span class="cov0" title="0">a.DB.Where("id = ?", locationId).Delete(Location{})
+        return nil</span>
+}
+
+func (a *EmployeeSet) GetLocationId(id string) (LocationResponse, error) <span class="cov8" title="1">{
+        var dbLocation Location
+        var locationResponse LocationResponse
+        var dbCountry Country
+        if NullString(id) == nil </span><span class="cov0" title="0">{
+                return locationResponse, ErrLocationNotFound
+        }</span>
+        <span class="cov8" title="1">conv, _ := strconv.Atoi(id)
+        locationId := uint(conv)
+
+        res := a.DB.Where("id = ?", locationId).First(&amp;dbLocation)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return locationResponse, ErrLocationNotFound
+                }</span>
+        }
+        <span class="cov8" title="1">if dbLocation.CountryID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbLocation.CountryID).First(&amp;dbCountry)
+        }</span>
+
+        <span class="cov8" title="1">locationResponse = LocationResponse{
+                ID:            dbLocation.ID,
+                StreetAddress: dbLocation.StreetAddress,
+                PostalCode:    dbLocation.PostalCode,
+                City:          dbLocation.City,
+                StateProvince: dbLocation.StateProvince,
+                Country:       dbCountry}
+        // Get the Location Single Data
+        return locationResponse, nil</span>
+}
+
+func (a *EmployeeSet) GetLocation() ([]Location, error) <span class="cov0" title="0">{
+        var dbLocation []Location
+        res := a.DB.Find(&amp;dbLocation)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbLocation, ErrLocationNotFound
+                }</span>
+
+        }
+        // Get the Location Single Data
+        <span class="cov0" title="0">return dbLocation, nil</span>
+}
+
+// REGION //
+func (a *EmployeeSet) CreateRegion(data Region) error <span class="cov8" title="1">{
+        var dbRegion Region
+        //res := a.DB.Where("region_name = ?", data.RegionName).First(&amp;dbRegion)
+        res := a.DB.FirstOrCreate(&amp;dbRegion, data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">if res.RowsAffected == 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        //a.DB.Create(&amp;data)
+        <span class="cov8" title="1">return ErrDataIsExisted</span>
+}
+
+func (a *EmployeeSet) UpdateRegion(regionId uint, data map[string]interface{}) error <span class="cov8" title="1">{
+        var dbRegion Region
+        res := a.DB.Model(&amp;dbRegion).Where("id = ?", regionId).Updates(data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (a *EmployeeSet) DeleteRegion(regionId uint) error <span class="cov8" title="1">{
+        var dbRegion Region
+        res := a.DB.Where("id = ?", regionId).First(&amp;dbRegion).Error
+        if res != nil </span><span class="cov0" title="0">{
+                return ErrRegionNotFound
+        }</span>
+        // Delete the Country
+        <span class="cov8" title="1">res_delete := a.DB.Where("id = ?", regionId).Delete(Region{}).Error
+        if res_delete != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (a *EmployeeSet) GetRegionId(id string) (Region, error) <span class="cov8" title="1">{
+        var dbRegion Region
+        if NullString(id) == nil </span><span class="cov0" title="0">{
+                return dbRegion, ErrRegionNotFound
+        }</span>
+        <span class="cov8" title="1">conv, _ := strconv.Atoi(id)
+        regionId := uint(conv)
+
+        res := a.DB.Where("id = ?", regionId).First(&amp;dbRegion)
+        if res.Error != nil </span><span class="cov8" title="1">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov8" title="1">{
+                        return dbRegion, ErrRegionNotFound
+                }</span>
+
+        }
+        // Get the Region Single Data
+        <span class="cov0" title="0">return dbRegion, nil</span>
+}
+
+func (a *EmployeeSet) GetRegion() ([]Region, error) <span class="cov0" title="0">{
+        var dbRegion []Region
+        res := a.DB.Find(&amp;dbRegion)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbRegion, ErrRegionNotFound
+                }</span>
+
+        }
+        // Get the Region List
+        <span class="cov0" title="0">return dbRegion, nil</span>
+}
+
+// JOB //
+func (a *EmployeeSet) CreateJob(data Job) error <span class="cov8" title="1">{
+        var dbJob Job
+        //res := a.DB.Where("job_title = ?", data.JobTitle).First(&amp;dbJob)
+        res := a.DB.FirstOrCreate(&amp;dbJob, data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">if res.RowsAffected == 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        //a.DB.Create(&amp;data)
+        <span class="cov8" title="1">return ErrDataIsExisted</span>
+}
+
+func (a *EmployeeSet) UpdateJob(jobId uint, data map[string]interface{}) error <span class="cov0" title="0">{
+        var dbJob Job
+        res := a.DB.Model(&amp;dbJob).Where("id = ?", jobId).Updates(data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return res.Error
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (a *EmployeeSet) DeleteJob(jobId uint) error <span class="cov0" title="0">{
+        var dbJob Job
+        res := a.DB.Where("id = ?", jobId).First(&amp;dbJob)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return ErrJobNotFound
+                }</span>
+
+        }
+        // Delete the Country
+        <span class="cov0" title="0">a.DB.Where("id = ?", jobId).Delete(Job{})
+        return nil</span>
+}
+
+func (a *EmployeeSet) GetJobId(id string) (Job, error) <span class="cov8" title="1">{
+        var dbJob Job
+        if NullString(id) == nil </span><span class="cov0" title="0">{
+                return dbJob, ErrJobNotFound
+        }</span>
+        <span class="cov8" title="1">conv, _ := strconv.Atoi(id)
+        jobId := uint(conv)
+
+        res := a.DB.Where("id = ?", jobId).First(&amp;dbJob)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbJob, ErrJobNotFound
+                }</span>
+
+        }
+        // Get the Employee Single Data
+        <span class="cov8" title="1">return dbJob, nil</span>
+}
+
+func (a *EmployeeSet) GetJob() ([]Job, error) <span class="cov0" title="0">{
+        var dbJob []Job
+        res := a.DB.Find(&amp;dbJob)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbJob, ErrJobNotFound
+                }</span>
+
+        }
+        // Get the Employee Single Data
+        <span class="cov0" title="0">return dbJob, nil</span>
+}
+
+// JOB HISTORY //
+func (a *EmployeeSet) CreateJobHistory(data JobHistory) error <span class="cov8" title="1">{
+        var dbJobHistory JobHistory
+        //res := a.DB.Where("job_id = ?", data.JobID).First(&amp;dbJob)
+        res := a.DB.FirstOrCreate(&amp;dbJobHistory, data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">if res.RowsAffected == 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        //a.DB.Create(&amp;data)
+        <span class="cov8" title="1">return ErrDataIsExisted</span>
+}
+
+func (a *EmployeeSet) UpdateJobHistory(jobId uint, data map[string]interface{}) error <span class="cov0" title="0">{
+        var dbJob JobHistory
+        res := a.DB.Model(&amp;dbJob).Where("id = ?", jobId).Updates(data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return res.Error
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (a *EmployeeSet) DeleteJobHistory(jobId uint) error <span class="cov0" title="0">{
+        var dbJob JobHistory
+        res := a.DB.Where("id = ?", jobId).First(&amp;dbJob)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return ErrJobHistoryNotFound
+                }</span>
+
+        }
+        // Delete the Country
+        <span class="cov0" title="0">a.DB.Where("id = ?", jobId).Delete(JobHistory{})
+        return nil</span>
+}
+
+func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistoryResponse, error) <span class="cov8" title="1">{
+        var dbJob JobHistory
+        var returnJob JobHistoryResponse
+        var dbJ Job
+        var dbDepart Department
+        if NullString(id) == nil </span><span class="cov0" title="0">{
+                return returnJob, ErrJobHistoryNotFound
+        }</span>
+        <span class="cov8" title="1">conv, _ := strconv.Atoi(id)
+        jobId := uint(conv)
+
+        res := a.DB.Where("id = ?", jobId).First(&amp;dbJob)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return returnJob, ErrJobHistoryNotFound
+                }</span>
+
+        }
+        <span class="cov8" title="1">if dbJob.JobID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbJob.JobID).First(&amp;dbJ)
+        }</span>
+        <span class="cov8" title="1">if dbJob.JobID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbJob.DepartmentID).First(&amp;dbDepart)
+        }</span>
+        <span class="cov8" title="1">returnJob = JobHistoryResponse{
+                ID:         dbJob.ID,
+                EmployeeID: dbJob.EmployeeID,
+                StartDate:  dbJob.StartDate,
+                EndDate:    dbJob.EndDate,
+                Job:        dbJ,
+                Department: dbDepart}
+        // Get the Job History Single Data
+        return returnJob, nil</span>
+}
+
+func (a *EmployeeSet) GetJobHistory() ([]JobHistory, error) <span class="cov0" title="0">{
+        var dbJob []JobHistory
+        res := a.DB.Find(&amp;dbJob)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbJob, ErrJobHistoryNotFound
+                }</span>
+
+        }
+        // Get the Job History Single Data
+        <span class="cov0" title="0">return dbJob, nil</span>
+}
+
+// EMPLOYEE //
+func (a *EmployeeSet) CreateEmployee(data Employee) error <span class="cov8" title="1">{
+        var dbEmployee Employee
+        //res := a.DB.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).First(&amp;dbEmployee)
+        res := a.DB.FirstOrCreate(&amp;dbEmployee, data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return ErrInvalidTransaction
+        }</span>
+        <span class="cov8" title="1">if res.RowsAffected == 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        //a.DB.Create(&amp;data)
+        <span class="cov8" title="1">return ErrDataIsExisted</span>
+}
+
+func (a *EmployeeSet) UpdateEmployee(employeeId uint, data map[string]interface{}) error <span class="cov0" title="0">{
+        var dbEmployee Employee
+        res := a.DB.Model(&amp;dbEmployee).Where("id = ?", employeeId).Updates(data)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                return res.Error
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (a *EmployeeSet) DeleteEmployee(employeeId uint) error <span class="cov0" title="0">{
+        var dbJob JobHistory
+        res := a.DB.Where("id = ?", employeeId).First(&amp;dbJob)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return ErrEmployeeNotFound
+                }</span>
+
+        }
+        // Delete the Country
+        <span class="cov0" title="0">a.DB.Where("id = ?", employeeId).Delete(Employee{})
+        return nil</span>
+}
+
+func (a *EmployeeSet) GetEmployeeId(id string) (EmployeeResponse, error) <span class="cov8" title="1">{
+        var dbEmployee Employee
+        var dbDP Department
+        var dbJob Job
+        var returnMeta EmployeeResponse
+        if NullString(id) == nil </span><span class="cov0" title="0">{
+                return returnMeta, ErrParameterNotFound
+        }</span>
+        <span class="cov8" title="1">conv, _ := strconv.Atoi(id)
+        employeeId := uint(conv)
+
+        res := a.DB.Where("id = ?", employeeId).First(&amp;dbEmployee)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return returnMeta, ErrEmployeeNotFound
+                }</span>
+        }
+        <span class="cov8" title="1">if dbEmployee.DepartmentID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbEmployee.DepartmentID).First(&amp;dbDP)
+        }</span>
+        <span class="cov8" title="1">if dbEmployee.JobID &gt; 0 </span><span class="cov8" title="1">{
+                _ = a.DB.Where("id = ?", dbEmployee.JobID).First(&amp;dbJob)
+        }</span>
+        <span class="cov8" title="1">returnMeta = EmployeeResponse{
+                ID:          dbEmployee.ID,
+                CustomID:    dbEmployee.CustomID,
+                EmployeeID:  dbEmployee.EmployeeID,
+                FirstName:   dbEmployee.FirstName,
+                LastName:    dbEmployee.LastName,
+                Email:       dbEmployee.Email,
+                PhoneNumber: dbEmployee.PhoneNumber,
+                JobID:       dbEmployee.JobID,
+                Salary:      dbEmployee.Salary,
+                Picture:     dbEmployee.Picture,
+                ManagerID:   dbEmployee.ManagerID,
+                Department:  dbDP,
+                Job:         dbJob}
+
+        // Get the Employee Single Data
+        return returnMeta, nil</span>
+}
+
+func (a *EmployeeSet) GetEmployee() ([]Employee, error) <span class="cov0" title="0">{
+        var dbEmployee []Employee
+        res := a.DB.Find(&amp;dbEmployee)
+        if res.Error != nil </span><span class="cov0" title="0">{
+                if errors.Is(res.Error, gorm.ErrRecordNotFound) </span><span class="cov0" title="0">{
+                        return dbEmployee, ErrEmployeeNotFound
+                }</span>
+
+        }
+        // Get the Employee List
+        <span class="cov0" title="0">return dbEmployee, nil</span>
+}
+
+func NullString(v string) *string <span class="cov8" title="1">{
+        if v == "" </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">return &amp;v</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package EmployeesGo
+
+import ("time")
+
+type Employee struct {
+        ID           uint
+        CustomID     string `gorm:"size:50;default:null;unique"`
+        EmployeeID   string `gorm:"size:50;default:null;unique"`
+        FirstName    string
+        LastName     string
+        Email        string `gorm:"size:100;default:null;unique"`
+        PhoneNumber  string
+        JobID        uint
+        Salary       uint64
+        Picture      string
+        Active bool
+        CreatedDate time.Time
+        Contract bool
+        ManagerID    uint
+        DepartmentID uint
+}
+
+type EmployeeResponse struct {
+        ID          uint
+        CustomID    string
+        EmployeeID  string
+        FirstName   string
+        LastName    string
+        Email       string
+        PhoneNumber string
+        JobID       uint
+        Salary      uint64
+        Picture     string
+        ManagerID   uint
+        Department  Department
+        Job         Job
+}
+
+func (a Employee) TableName() string <span class="cov8" title="1">{
+        return tablePrefix + "employees"
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package EmployeesGo
+
+type Job struct {
+        ID        uint
+        JobTitle  string
+        JobDescription string `gorm:"type:text;unique"`
+        MinSalary uint64
+        MaxSalary uint64
+}
+
+func (r Job) TableName() string <span class="cov8" title="1">{
+        return tablePrefix + "jobs"
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package EmployeesGo
+
+import "time"
+
+type JobHistory struct {
+        ID           uint
+        EmployeeID   uint
+        StartDate    time.Time
+        EndDate      time.Time
+        JobID        uint
+        DepartmentID uint
+}
+
+type JobHistoryResponse struct {
+        ID         uint
+        EmployeeID uint
+        StartDate  time.Time
+        EndDate    time.Time
+        Job        Job
+        Department Department
+}
+
+func (r JobHistory) TableName() string <span class="cov8" title="1">{
+        return tablePrefix + "job_history"
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package EmployeesGo
+
+type Location struct {
+        ID            uint
+        StreetAddress string
+        PostalCode    string
+        City          string
+        StateProvince string
+        CountryID     uint
+}
+
+type LocationResponse struct {
+        ID            uint
+        StreetAddress string
+        PostalCode    string
+        City          string
+        StateProvince string
+        Country       Country
+}
+
+func (r Location) TableName() string <span class="cov8" title="1">{
+        return tablePrefix + "locations"
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package EmployeesGo
+
+type Region struct {
+        ID         uint
+        RegionName string
+}
+
+func (r Region) TableName() string <span class="cov8" title="1">{
+        return tablePrefix + "regions"
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

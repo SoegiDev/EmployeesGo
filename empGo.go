@@ -37,6 +37,7 @@ var (
 	ErrJobHistoryNotFound = errors.New("Job History Not Found")
 	ErrRegionNotFound     = errors.New("Region Not Found")
 	ErrDataIsExisted          = errors.New("data Already Exist")
+	ErrInvalidTransaction = errors.New("invalid Transaction Found")
 )
 
 func migrateTables(db *gorm.DB) {
@@ -59,10 +60,7 @@ func (a *EmployeeSet) CreateDepartment(data Department) error {
 	//res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
 	res := a.DB.FirstOrCreate(&dbDepartment, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
-			//a.DB.Create(&data)
-			return res.Error
-		}
+			return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
@@ -148,10 +146,7 @@ func (a *EmployeeSet) CreateCountry(data Country) error {
 	//res := a.DB.Where("country_name = ?", data.CountryName).First(&dbCountry)
 	res := a.DB.FirstOrCreate(&dbCountry, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
-			//a.DB.Create(&data)
-			return res.Error
-		}
+		return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
@@ -164,7 +159,7 @@ func (a *EmployeeSet) UpdateCountry(countryId uint, data map[string]interface{})
 	var dbCountry Country
 	res := a.DB.Model(&dbCountry).Where("id = ?", countryId).Updates(data)
 	if res.Error != nil {
-		return res.Error
+		return ErrInvalidTransaction
 	}
 	return nil
 }
@@ -231,10 +226,7 @@ func (a *EmployeeSet) CreateLocation(data Location) error {
 	//res := a.DB.Where("street_address = ?", data.StreetAddress).First(&dbLocation)
 	res := a.DB.FirstOrCreate(&dbLocation, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
-			//a.DB.Create(&data)
-			return res.Error
-		}
+		return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
@@ -316,10 +308,7 @@ func (a *EmployeeSet) CreateRegion(data Region) error {
 	//res := a.DB.Where("region_name = ?", data.RegionName).First(&dbRegion)
 	res := a.DB.FirstOrCreate(&dbRegion, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
-			//a.DB.Create(&data)
-			return res.Error
-		}
+		return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
@@ -332,7 +321,7 @@ func (a *EmployeeSet) UpdateRegion(regionId uint, data map[string]interface{}) e
 	var dbRegion Region
 	res := a.DB.Model(&dbRegion).Where("id = ?", regionId).Updates(data)
 	if res.Error != nil {
-		return res.Error
+		return ErrInvalidTransaction
 	}
 	return nil
 }
@@ -341,13 +330,13 @@ func (a *EmployeeSet) DeleteRegion(regionId uint) error {
 	var dbRegion Region
 	res := a.DB.Where("id = ?", regionId).First(&dbRegion)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return ErrRegionNotFound
-		}
-
+		return ErrRegionNotFound
 	}
 	// Delete the Country
-	a.DB.Where("id = ?", regionId).Delete(Region{})
+	res_delete := a.DB.Where("id = ?", regionId).Delete(Region{})
+	if res_delete.Error != nil {
+		return ErrInvalidTransaction
+	}
 	return nil
 }
 
@@ -389,10 +378,7 @@ func (a *EmployeeSet) CreateJob(data Job) error {
 	//res := a.DB.Where("job_title = ?", data.JobTitle).First(&dbJob)
 	res := a.DB.FirstOrCreate(&dbJob, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
-			//a.DB.Create(&data)
-			return res.Error
-		}
+		return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
@@ -462,10 +448,7 @@ func (a *EmployeeSet) CreateJobHistory(data JobHistory) error {
 	//res := a.DB.Where("job_id = ?", data.JobID).First(&dbJob)
 	res := a.DB.FirstOrCreate(&dbJobHistory, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
-			//a.DB.Create(&data)
-			return res.Error
-		}
+		return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
@@ -551,10 +534,7 @@ func (a *EmployeeSet) CreateEmployee(data Employee) error {
 	//res := a.DB.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).First(&dbEmployee)
 	res := a.DB.FirstOrCreate(&dbEmployee, data)
 	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrInvalidTransaction) {
-			//a.DB.Create(&data)
-			return res.Error
-		}
+		return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
