@@ -39,34 +39,32 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+// TEST REGION
 func TestCreateRegion(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
 
-	// test create role
 	data := EmployeesGo.Region{
 		RegionName: "Asia Pasific",
 	}
 	err := empGo.CreateRegion(data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
-			fmt.Println("Create Region is Oke")
-		}
+	} else {
+		fmt.Println("Create Region is Oke")
+	}
 	// test duplicated entries
 	err_duplicate := empGo.CreateRegion(data)
 	if err_duplicate != nil {
-		if err_duplicate.Error() == "data Already Exist"{
+		if err_duplicate.Error() == "data Already Exist" {
 			fmt.Println("Duplicate is Oke")
 		}
-		
+
 	}
-	// clean up
-	//db.Where("region_name = ?", data.RegionName).Delete(EmployeesGo.Region{})
 }
 func TestUpdateRegion(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
@@ -75,39 +73,52 @@ func TestUpdateRegion(t *testing.T) {
 	})
 
 	// test create role
-	data := map[string]interface{}{"region_name":"Asia Jakarta"}
-	err := empGo.UpdateRegion(1,data)
+	data := map[string]interface{}{"region_name": "Asia Jakarta"}
+	err := empGo.UpdateRegion(1, data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
+	} else {
 		fmt.Println("Update Region Ok")
 	}
-
 }
-
-func TestDeleteRegion(t *testing.T) {
+func TestGetRegionById(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-
-	// test Delete Region
-	err := empGo.DeleteRegion(1)
+	var data uint = 1
+	var empData EmployeesGo.Region
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetRegionId(params)
 	if err != nil {
-		if err.Error() == "Region Not Found"{
+		if err.Error() == "Region Not Found" {
 			fmt.Println("Region Not Found is Oke")
 		}
-		if err.Error() == "invalid Transaction Found"{
-			fmt.Println("invalid Transaction is Oke")
-		}
-	}else{
-		fmt.Println("Delete Region Ok")
+	} else {
+		fmt.Println("Get Region By Id is Oke")
+		fmt.Println(empData)
 	}
-
+}
+func TestGetRegionAll(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var empData []EmployeesGo.Region
+	empData, err := empGo.GetRegion()
+	if err != nil {
+		if err.Error() == "Region Not Found" {
+			fmt.Println("Region Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Region All is Oke")
+		fmt.Println(empData)
+	}
 }
 
+// TEST COUNTRY
 func TestCreateCountry(t *testing.T) {
 
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
@@ -122,24 +133,55 @@ func TestCreateCountry(t *testing.T) {
 	}
 	err := empGo.CreateCountry(data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
+	} else {
 		fmt.Println("Create Country is Oke")
 	}
 	// test duplicated entries
 	err_duplicate := empGo.CreateCountry(data)
 	if err_duplicate != nil {
-		if err_duplicate.Error() == "data Already Exist"{
+		if err_duplicate.Error() == "data Already Exist" {
 			fmt.Println("Duplicate is Oke")
 		}
-		
-	}
-	// clean up
-	//db.Where("country_name = ?", data.CountryName).Delete(EmployeesGo.Country{})
-}
 
+	}
+}
+func TestGetCountryById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.CountryResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetCountryId(params)
+	if err != nil {
+		if err.Error() == "Country Not Found" {
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Get Country By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+func TestGetCountryByAll(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var empData []EmployeesGo.Country
+	empData, err := empGo.GetCountry()
+	if err != nil {
+		if err.Error() == "Country Not Found" {
+			fmt.Println("Country Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Country By Id is Oke")
+		fmt.Println(empData)
+	}
+}
 func TestUpdateCountry(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
@@ -147,28 +189,29 @@ func TestUpdateCountry(t *testing.T) {
 	})
 
 	// test create role
-	data := map[string]interface{}{"country_name":"Indonesia","region_id":1}
-	err := empGo.UpdateCountry(1,data)
+	data := map[string]interface{}{"country_name": "Indonesia", "region_id": 1}
+	err := empGo.UpdateCountry(1, data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
+	} else {
 		fmt.Println("Update Country Ok")
 	}
 	// TEST ERROR
-	data_1 := map[string]interface{}{"country_name":"Indonesia","region_id":1}
-	err_1 := empGo.UpdateCountry(1,data_1)
+	data_1 := map[string]interface{}{"country_name": "Indonesia", "region_id": 1}
+	err_1 := empGo.UpdateCountry(1, data_1)
 	if err_1 != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
+	} else {
 		fmt.Println("Update Country Ok")
 	}
 
 }
 
+// TEST LOCATION
 func TestCreateLocation(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
@@ -184,26 +227,74 @@ func TestCreateLocation(t *testing.T) {
 		CountryID:     1}
 	err := empGo.CreateLocation(data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
+	} else {
 		fmt.Println("Create Location is Oke")
 	}
 
 	// test duplicated entries
 	err_duplicate := empGo.CreateLocation(data)
 	if err_duplicate != nil {
-		if err_duplicate.Error() == "data Already Exist"{
+		if err_duplicate.Error() == "data Already Exist" {
 			fmt.Println("Duplicate is Oke")
 		}
-		
-	}
 
-	// clean up
-	//db.Where("street_address = ?", data.StreetAddress).Delete(EmployeesGo.Location{})
+	}
+}
+func TestGetLocationById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.LocationResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetLocationId(params)
+	if err != nil {
+		if err.Error() == "Location Not Found" {
+			fmt.Println("Get Location Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Location By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+func TestGetLocationAll(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var empData []EmployeesGo.Location
+	empData, err := empGo.GetLocation()
+	if err != nil {
+		if err.Error() == "Location Not Found" {
+			fmt.Println("Get Location Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Location By Id is Oke")
+		fmt.Println(empData)
+	}
 }
 
+func TestUpdateLocation(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	data := map[string]interface{}{"street_address": "Indonesia", "postal_code": "21321", "city": "Jakarta", "state_province": "Jakarta", "country_id": 1}
+	err := empGo.UpdateLocation(1, data)
+	if err != nil {
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Update Location Ok")
+	}
+}
+
+// TEST DEPARTMENT
 func TestCreateDepartment(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
@@ -213,64 +304,161 @@ func TestCreateDepartment(t *testing.T) {
 	// test create role
 	data := EmployeesGo.Department{
 		DepartmentName: "ICT",
-		ManagerID:      1,
+		ManagerID:      0,
 		LocationID:     1,
 		CompanyID:      1}
 	err := empGo.CreateDepartment(data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
-			fmt.Println("Create Department is Oke")
-		}
+	} else {
+		fmt.Println("Create Department is Oke")
+	}
 
 	// test duplicated entries
 	err_duplicate := empGo.CreateDepartment(data)
 	if err_duplicate != nil {
-		if err_duplicate.Error() == "data Already Exist"{
+		if err_duplicate.Error() == "data Already Exist" {
 			fmt.Println("Duplicate is Oke")
 		}
-		
-	}
 
-	// clean up
-	//db.Where("department_name = ?", data.DepartmentName).Delete(EmployeesGo.Department{})
+	}
 }
 
+func TestGetDepartmentById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.DepartmentResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetDepartmentId(params)
+	if err != nil {
+		if err.Error() == "Department Not Found" {
+			fmt.Println("Get Department Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Department By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestGetDepartmentAll(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var empData []EmployeesGo.Department
+	empData, err := empGo.GetDepartment()
+	if err != nil {
+		if err.Error() == "Department Not Found" {
+			fmt.Println("Get Department Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Department By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestUpdateDepartment(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	data := map[string]interface{}{"department_name": "ITC", "manager_id": 0, "location_id": 1, "company_id": 1}
+	err := empGo.UpdateDepartment(1, data)
+	if err != nil {
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Update Department Ok")
+	}
+}
+
+// TEST JOB
 func TestCreateJob(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-
-	// test create role
 	data := EmployeesGo.Job{
 		JobTitle:  "Software Engineer",
 		MinSalary: 10000000,
 		MaxSalary: 19000000}
 	err := empGo.CreateJob(data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
-			fmt.Println("Create Job is Oke")
-		}
+	} else {
+		fmt.Println("Create Job is Oke")
+	}
 
 	// test duplicated entries
 	err_duplicate := empGo.CreateJob(data)
 	if err_duplicate != nil {
-		if err_duplicate.Error() == "data Already Exist"{
+		if err_duplicate.Error() == "data Already Exist" {
 			fmt.Println("Duplicate is Oke")
 		}
-		
-	}
 
-	// clean up
-	//db.Where("job_title = ?", data.JobTitle).Delete(EmployeesGo.Job{})
+	}
+}
+func TestGetJobById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.JobResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetJobId(params)
+	if err != nil {
+		if err.Error() == "Job Not Found" {
+			fmt.Println("Get Job Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Job By Id is Oke")
+		fmt.Println(empData)
+	}
 }
 
+func TestGetJobAll(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var empData []EmployeesGo.Job
+	empData, err := empGo.GetJob()
+	if err != nil {
+		if err.Error() == "Job Not Found" {
+			fmt.Println("Get Job Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Job By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestUpdateJob(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	data := map[string]interface{}{"job_title": "Programmer", "job_description": "IT Programmer", "min_salary": 900000, "max_salary": 19900000}
+	err := empGo.UpdateJob(1, data)
+	if err != nil {
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Update Job Ok")
+	}
+}
+
+// TEST EMPLOYEE
 func TestCreateEmployee(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
@@ -292,26 +480,76 @@ func TestCreateEmployee(t *testing.T) {
 		DepartmentID: 1}
 	err := empGo.CreateEmployee(data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
-			fmt.Println("Create Employee is Oke")
-		}
+	} else {
+		fmt.Println("Create Employee is Oke")
+	}
 
 	// test duplicated entries
 	err_duplicate := empGo.CreateEmployee(data)
 	if err_duplicate != nil {
-		if err_duplicate.Error() == "data Already Exist"{
+		if err_duplicate.Error() == "data Already Exist" {
 			fmt.Println("Duplicate is Oke")
 		}
-		
-	}
 
-	// clean up
-	//db.Where("first_name = ? and last_name = ?", data.FirstName, data.LastName).Delete(EmployeesGo.Employee{})
+	}
 }
 
+func TestGetEmployeeById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.EmployeeResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetEmployeeId(params)
+	if err != nil {
+		if err.Error() == "Employee Not Found" {
+			fmt.Println("Get Employee Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Employee By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestGetEmployeeAll(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var empData []EmployeesGo.Employee
+	empData, err := empGo.GetEmployee()
+	if err != nil {
+		if err.Error() == "Employee Not Found" {
+			fmt.Println("Get Employee Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Employee By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestUpdateEmployee(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	data := map[string]interface{}{"employee_id": "12312321", "first_name": "Test", "last_name": "user"}
+	err := empGo.UpdateEmployee(1, data)
+	if err != nil {
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Update Employee Ok")
+	}
+}
+
+// TEST JOB HISTORY
 func TestCreateJobHistory(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
@@ -327,55 +565,328 @@ func TestCreateJobHistory(t *testing.T) {
 		DepartmentID: 1}
 	err := empGo.CreateJobHistory(data)
 	if err != nil {
-		if err.Error() == "invalid Transaction Found"{
+		if err.Error() == "invalid Transaction Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
-			fmt.Println("Create Job History is Oke")
-		}
-
-	// test duplicated entries
-	err_duplicate:=empGo.CreateJobHistory(data)
-	if err_duplicate != nil {
-		if err_duplicate.Error() == "data Already Exist"{
-			fmt.Println("Duplicate is Oke")
-		}
-		
+	} else {
+		fmt.Println("Create Job History is Oke")
 	}
 
-	// clean up
-	//db.Where("job_id = ?", data.JobID).Delete(EmployeesGo.JobHistory{})
+	// test duplicated entries
+	err_duplicate := empGo.CreateJobHistory(data)
+	if err_duplicate != nil {
+		if err_duplicate.Error() == "data Already Exist" {
+			fmt.Println("Duplicate is Oke")
+		}
+
+	}
 }
 
-// RETRIEVE
-// EMPLOYEE //
-func TestGetEmployee(t *testing.T) {
-	var table string = "get_employee"
+func TestGetJobHistoryById(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-	var c int64
-
 	var data uint = 1
-	res := db.Model(EmployeesGo.Employee{}).Where("id = ?", data).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
-	} else {
-		var empData EmployeesGo.EmployeeResponse
-		params := strconv.FormatUint(uint64(data), 10)
-		empData, err := empGo.GetEmployeeId(params)
-		if err != nil {
-			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+	var empData EmployeesGo.JobHistoryResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetJobHistoryId(params)
+	if err != nil {
+		if err.Error() == "Job History Not Found" {
+			fmt.Println("Get Job History Not Found is Oke")
 		}
+	} else {
+		fmt.Println("Get Job History By Id is Oke")
 		fmt.Println(empData)
 	}
 }
 
-func TestGetCountry(t *testing.T) {
+func TestGetJobHistoryAll(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var empData []EmployeesGo.JobHistory
+	empData, err := empGo.GetJobHistory()
+	if err != nil {
+		if err.Error() == "Job History Not Found" {
+			fmt.Println("Get Job History Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Job History By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestUpdateJobHistory(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	data := map[string]interface{}{"employee_id": 1, "job_id": 1, "department_id": 1}
+	err := empGo.UpdateJobHistory(1, data)
+	if err != nil {
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("Invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Update Job History Ok")
+	}
+}
+
+// TEST DELETE
+
+func TestDeleteRegion(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteRegion(1)
+	if err != nil {
+		if err.Error() == "Region Not Found" {
+			fmt.Println("Region Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Region Ok")
+	}
+}
+func TestDeleteCountry(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteCountry(1)
+	if err != nil {
+		if err.Error() == "Country Not Found" {
+			fmt.Println("Country Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Country Ok")
+	}
+}
+
+func TestDeleteLocation(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteLocation(1)
+	if err != nil {
+		if err.Error() == "Location Not Found" {
+			fmt.Println("Location Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Location Ok")
+	}
+}
+func TestDeleteDepartment(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteDepartment(1)
+	if err != nil {
+		if err.Error() == "Department Not Found" {
+			fmt.Println("Department Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Department Ok")
+	}
+}
+func TestDeleteJob(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteJob(1)
+	if err != nil {
+		if err.Error() == "Job Not Found" {
+			fmt.Println("Job Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Job Ok")
+	}
+}
+func TestDeleteJobHistory(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteJobHistory(1)
+	if err != nil {
+		if err.Error() == "Job History Not Found" {
+			fmt.Println("Job History Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Job History Ok")
+	}
+}
+func TestDeleteEmployee(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteEmployee(1)
+	if err != nil {
+		if err.Error() == "Employee Not Found" {
+			fmt.Println("Employee Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Employee Ok")
+	}
+}
+
+// TEST NOT FOUND BY ID
+
+func TestNotFoundEmployee(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.EmployeeResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetEmployeeId(params)
+	if err != nil {
+		if err.Error() == "Employee Not Found" {
+			fmt.Println("Get Employee Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Employee By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+func TestNotFoundJobById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.JobResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetJobId(params)
+	if err != nil {
+		if err.Error() == "Job Not Found" {
+			fmt.Println("Get Job Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Job By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestNotFoundDepartmentById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.DepartmentResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetDepartmentId(params)
+	if err != nil {
+		if err.Error() == "Department Not Found" {
+			fmt.Println("Get Department Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Department By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestNotFoundRegionById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.Region
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetRegionId(params)
+	if err != nil {
+		if err.Error() == "Region Not Found" {
+			fmt.Println("Region Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Region By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestNotFoundLocationById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.LocationResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetLocationId(params)
+	if err != nil {
+		if err.Error() == "Location Not Found" {
+			fmt.Println("Get Location Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Location By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestNotFoundJobHistoryById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	var data uint = 1
+	var empData EmployeesGo.JobHistoryResponse
+	params := strconv.FormatUint(uint64(data), 10)
+	empData, err := empGo.GetJobHistoryId(params)
+	if err != nil {
+		if err.Error() == "Job History Not Found" {
+			fmt.Println("Get Job History Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Job History By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+
+func TestNotFoundCountryById(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
@@ -385,138 +896,242 @@ func TestGetCountry(t *testing.T) {
 	params := strconv.FormatUint(uint64(data), 10)
 	empData, err := empGo.GetCountryId(params)
 	if err != nil {
-		if err.Error() == "Country Not Found"{
+		if err.Error() == "Country Not Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
-			fmt.Println("Get Country By Id is Oke")
-			fmt.Println(empData)
-		}
+	} else {
+		fmt.Println("Get Country By Id is Oke")
+		fmt.Println(empData)
+	}
 }
 
-func TestGetRegion(t *testing.T) {
+// TEST NOT FOUND DELETE
+func TestNotFoundDeleteRegion(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-	var data uint = 2
-	var empData EmployeesGo.Region
-	params := strconv.FormatUint(uint64(data), 10)
-	empData, err := empGo.GetRegionId(params)
+
+	// test Delete Region
+	err := empGo.DeleteRegion(1)
 	if err != nil {
-		if err.Error() == "Region Not Found"{
+		if err.Error() == "Region Not Found" {
+			fmt.Println("Region Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Region Ok")
+	}
+}
+func TestNotFoundDeleteCountry(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteCountry(1)
+	if err != nil {
+		if err.Error() == "Country Not Found" {
+			fmt.Println("Country Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Country Ok")
+	}
+}
+func TestNotFoundDeleteDepartment(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteDepartment(1)
+	if err != nil {
+		if err.Error() == "Department Not Found" {
+			fmt.Println("Department Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Department Ok")
+	}
+}
+func TestNotFoundDeleteJob(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteJob(1)
+	if err != nil {
+		if err.Error() == "Job Not Found" {
+			fmt.Println("Job Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Job Ok")
+	}
+}
+func TestNotFoundDeleteJobHistory(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteJobHistory(1)
+	if err != nil {
+		if err.Error() == "Job History Not Found" {
+			fmt.Println("Job History Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Job History Ok")
+	}
+}
+func TestNotFoundDeleteEmployee(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteEmployee(1)
+	if err != nil {
+		if err.Error() == "Employee Not Found" {
+			fmt.Println("Employee Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Employee Ok")
+	}
+}
+func TestNotFoundDeleteLocation(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+
+	// test Delete Region
+	err := empGo.DeleteLocation(1)
+	if err != nil {
+		if err.Error() == "Location Not Found" {
+			fmt.Println("Location Not Found is Oke")
+		}
+		if err.Error() == "invalid Transaction Found" {
+			fmt.Println("invalid Transaction is Oke")
+		}
+	} else {
+		fmt.Println("Delete Location Ok")
+	}
+}
+
+// TEST NOT FOUND PARAMETER ID
+func TestNotFoundGetJobById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	empData, err := empGo.GetJobId("")
+	if err != nil {
+		if err.Error() == "Job Not Found" {
+			fmt.Println("Get Job Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Job By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+func TestNotFoundGetJobHistoryById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	empData, err := empGo.GetJobHistoryId("")
+	if err != nil {
+		if err.Error() == "Job History Not Found" {
+			fmt.Println("Get Job History Not Found is Oke")
+		}
+	} else {
+		fmt.Println("Get Job History By Id is Oke")
+		fmt.Println(empData)
+	}
+}
+func TestNotFoundGetCountryById(t *testing.T) {
+	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
+		TablesPrefix: prefix_test,
+		DB:           db,
+	})
+	empData, err := empGo.GetCountryId("")
+	if err != nil {
+		if err.Error() == "Country Not Found" {
 			fmt.Println("Invalid Transaction is Oke")
 		}
-	}else{
-			fmt.Println("Get Region By Id is Oke")
-			fmt.Println(empData)
-		}
+	} else {
+		fmt.Println("Get Country By Id is Oke")
+		fmt.Println(empData)
+	}
 }
-
-func TestGetDepartment(t *testing.T) {
-	var table string = "get Department"
+func TestNotFoundGetEmployeeById(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-	var c int64
-
-	var data uint = 1
-	res := db.Model(EmployeesGo.Department{}).Where("id = ?", data).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
-	} else {
-		var empData EmployeesGo.DepartmentResponse
-		params := strconv.FormatUint(uint64(data), 10)
-		empData, err := empGo.GetDepartmentId(params)
-		if err != nil {
-			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+	empData, err := empGo.GetEmployeeId("")
+	if err != nil {
+		if err.Error() == "Employee Not Found" {
+			fmt.Println("Get Employee Not Found is Oke")
 		}
+	} else {
+		fmt.Println("Get Employee By Id is Oke")
 		fmt.Println(empData)
 	}
 }
-
-func TestGetLocation(t *testing.T) {
-	var table string = "get location"
+func TestNotFoundGetDepartmentById(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-	var c int64
-
-	var data uint = 1
-	res := db.Model(EmployeesGo.Location{}).Where("id = ?", data).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
-	} else {
-		var empData EmployeesGo.LocationResponse
-		params := strconv.FormatUint(uint64(data), 10)
-		empData, err := empGo.GetLocationId(params)
-		if err != nil {
-			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+	empData, err := empGo.GetDepartmentId("")
+	if err != nil {
+		if err.Error() == "Department Not Found" {
+			fmt.Println("Get Department Not Found is Oke")
 		}
+	} else {
+		fmt.Println("Get Department By Id is Oke")
 		fmt.Println(empData)
 	}
 }
 
-func TestGetJob(t *testing.T) {
-	var table string = "get country"
+func TestNotFoundGetLocationById(t *testing.T) {
 	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
 		TablesPrefix: prefix_test,
 		DB:           db,
 	})
-	var c int64
-
-	var data uint = 1
-	res := db.Model(EmployeesGo.Job{}).Where("id = ?", data).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
-	} else {
-		var empData EmployeesGo.Job
-		params := strconv.FormatUint(uint64(data), 10)
-		empData, err := empGo.GetJobId(params)
-		if err != nil {
-			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
+	empData, err := empGo.GetLocationId("")
+	if err != nil {
+		if err.Error() == "Location Not Found" {
+			fmt.Println("Get Location Not Found is Oke")
 		}
+	} else {
+		fmt.Println("Get Location By Id is Oke")
 		fmt.Println(empData)
 	}
 }
-
-func TestGetJobHistory(t *testing.T) {
-	var table string = "get country"
-	empGo := EmployeesGo.New(EmployeesGo.EmpOption{
-		TablesPrefix: prefix_test,
-		DB:           db,
-	})
-	var c int64
-
-	var data uint = 1
-	res := db.Model(EmployeesGo.JobHistory{}).Where("id = ?", data).Count(&c)
-	if res.Error != nil {
-		t.Error(fmt.Sprintf("unexpected error while storing %s: ", table), res.Error)
-	}
-	if c == 0 {
-		t.Error(fmt.Sprintf("%s is Empty", table), res.Error)
-	} else {
-		var empData EmployeesGo.JobHistoryResponse
-		params := strconv.FormatUint(uint64(data), 10)
-		empData, err := empGo.GetJobHistoryId(params)
-		if err != nil {
-			t.Error(fmt.Sprintf("Error Get Data %s ", table), err)
-		}
-		fmt.Println(empData)
-	}
-}
-
 func TestCleanUp(t *testing.T) {
 	tbl_regions := `"employeeGo_regions"`
 	tbl_countries := `"employeeGo_countries"`

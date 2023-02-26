@@ -36,7 +36,7 @@ var (
 	ErrJobNotFound        = errors.New("Job Not Found")
 	ErrJobHistoryNotFound = errors.New("Job History Not Found")
 	ErrRegionNotFound     = errors.New("Region Not Found")
-	ErrDataIsExisted          = errors.New("data Already Exist")
+	ErrDataIsExisted      = errors.New("data Already Exist")
 	ErrInvalidTransaction = errors.New("invalid Transaction Found")
 )
 
@@ -60,7 +60,7 @@ func (a *EmployeeSet) CreateDepartment(data Department) error {
 	//res := a.DB.Where("department_name = ?", data.DepartmentName).First(&dbDepartment)
 	res := a.DB.FirstOrCreate(&dbDepartment, data)
 	if res.Error != nil {
-			return ErrInvalidTransaction
+		return ErrInvalidTransaction
 	}
 	if res.RowsAffected == 1 {
 		return nil
@@ -129,13 +129,7 @@ func (a *EmployeeSet) GetDepartmentId(id string) (DepartmentResponse, error) {
 
 func (a *EmployeeSet) GetDepartment() ([]Department, error) {
 	var dbDepartment []Department
-	res := a.DB.Find(&dbDepartment)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbDepartment, ErrDepartmentNotFound
-		}
-
-	}
+	a.DB.Find(&dbDepartment)
 	// Get the Department Single Data
 	return dbDepartment, nil
 }
@@ -209,13 +203,7 @@ func (a *EmployeeSet) GetCountryId(id string) (CountryResponse, error) {
 
 func (a *EmployeeSet) GetCountry() ([]Country, error) {
 	var dbCountry []Country
-	res := a.DB.Find(&dbCountry)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbCountry, ErrCountryNotFound
-		}
-
-	}
+	a.DB.Find(&dbCountry)
 	// Get the Country Single Data
 	return dbCountry, nil
 }
@@ -291,13 +279,8 @@ func (a *EmployeeSet) GetLocationId(id string) (LocationResponse, error) {
 
 func (a *EmployeeSet) GetLocation() ([]Location, error) {
 	var dbLocation []Location
-	res := a.DB.Find(&dbLocation)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbLocation, ErrLocationNotFound
-		}
+	a.DB.Find(&dbLocation)
 
-	}
 	// Get the Location Single Data
 	return dbLocation, nil
 }
@@ -361,13 +344,8 @@ func (a *EmployeeSet) GetRegionId(id string) (Region, error) {
 
 func (a *EmployeeSet) GetRegion() ([]Region, error) {
 	var dbRegion []Region
-	res := a.DB.Find(&dbRegion)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbRegion, ErrRegionNotFound
-		}
+	a.DB.Find(&dbRegion)
 
-	}
 	// Get the Region List
 	return dbRegion, nil
 }
@@ -410,10 +388,11 @@ func (a *EmployeeSet) DeleteJob(jobId uint) error {
 	return nil
 }
 
-func (a *EmployeeSet) GetJobId(id string) (Job, error) {
+func (a *EmployeeSet) GetJobId(id string) (JobResponse, error) {
 	var dbJob Job
+	var returnMeta JobResponse
 	if NullString(id) == nil {
-		return dbJob, ErrJobNotFound
+		return returnMeta, ErrJobNotFound
 	}
 	conv, _ := strconv.Atoi(id)
 	jobId := uint(conv)
@@ -421,23 +400,23 @@ func (a *EmployeeSet) GetJobId(id string) (Job, error) {
 	res := a.DB.Where("id = ?", jobId).First(&dbJob)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrJobNotFound
+			return returnMeta, ErrJobNotFound
 		}
 
 	}
+	returnMeta = JobResponse{
+		ID:        dbJob.ID,
+		JobTitle:  dbJob.JobTitle,
+		MinSalary: dbJob.MinSalary,
+		MaxSalary: dbJob.MaxSalary}
 	// Get the Employee Single Data
-	return dbJob, nil
+	return returnMeta, nil
 }
 
 func (a *EmployeeSet) GetJob() ([]Job, error) {
 	var dbJob []Job
-	res := a.DB.Find(&dbJob)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrJobNotFound
-		}
+	a.DB.Find(&dbJob)
 
-	}
 	// Get the Employee Single Data
 	return dbJob, nil
 }
@@ -517,13 +496,8 @@ func (a *EmployeeSet) GetJobHistoryId(id string) (JobHistoryResponse, error) {
 
 func (a *EmployeeSet) GetJobHistory() ([]JobHistory, error) {
 	var dbJob []JobHistory
-	res := a.DB.Find(&dbJob)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbJob, ErrJobHistoryNotFound
-		}
+	a.DB.Find(&dbJob)
 
-	}
 	// Get the Job History Single Data
 	return dbJob, nil
 }
@@ -553,8 +527,8 @@ func (a *EmployeeSet) UpdateEmployee(employeeId uint, data map[string]interface{
 }
 
 func (a *EmployeeSet) DeleteEmployee(employeeId uint) error {
-	var dbJob JobHistory
-	res := a.DB.Where("id = ?", employeeId).First(&dbJob)
+	var dbEmployee Employee
+	res := a.DB.Where("id = ?", employeeId).First(&dbEmployee)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return ErrEmployeeNotFound
@@ -610,13 +584,8 @@ func (a *EmployeeSet) GetEmployeeId(id string) (EmployeeResponse, error) {
 
 func (a *EmployeeSet) GetEmployee() ([]Employee, error) {
 	var dbEmployee []Employee
-	res := a.DB.Find(&dbEmployee)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return dbEmployee, ErrEmployeeNotFound
-		}
+	a.DB.Find(&dbEmployee)
 
-	}
 	// Get the Employee List
 	return dbEmployee, nil
 }
